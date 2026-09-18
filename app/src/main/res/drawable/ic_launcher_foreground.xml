@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Derived from assets/brand/nowly-mark.svg; centered within the safe zone. -->
+    <group android:translateX="18" android:translateY="18"
+        android:scaleX="1.5" android:scaleY="1.5">
+        <path android:fillColor="@android:color/transparent"
+            android:strokeColor="#526B5B" android:strokeWidth="2.8"
+            android:strokeLineCap="round"
+            android:pathData="M34.8,11.4 A16.5,16.5 0,1 0,40.1,28" />
+        <path android:fillColor="#526B5B"
+            android:pathData="M24,18.8 A5.2,5.2 0,1 1,24,29.2 A5.2,5.2 0,1 1,24,18.8" />
+    </group>
+</vector>

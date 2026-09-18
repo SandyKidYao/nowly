@@ -1,0 +1,510 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><title>此刻 Nowly — MVP 线框图 v0.8</title><style>
+.app-body .project-name{margin:0;font-size:18px}.project-title{display:inline-flex;align-items:center;gap:8px;border:0;background:none;padding:5px 0;text-align:left;font-size:18px;font-weight:550;min-height:36px}.project-title span{font-size:20px;color:#999;font-weight:400}.project-title:hover{text-decoration:underline}.project-card-heading{margin-bottom:8px}.project-tile .reminder-switch{flex-shrink:0}.toggle.reminder-switch{width:40px;height:24px;padding:0}.toggle.reminder-switch:after{width:18px;height:18px;top:2px;left:2px}.toggle.reminder-switch.on:after{left:18px}.app-body .project-schedule{margin:12px 0 0}.project-tile .question{margin-top:10px}
+
+.project-form{position:relative;overscroll-behavior:contain;scrollbar-width:thin}.form-section{padding:6px 0 20px;margin-bottom:22px;border-bottom:1px solid #ddd}.form-section:last-child{border-bottom:0;margin-bottom:0}.app-body .form-section h3{font-size:16px;margin:4px 0 18px}.form-section .field{margin-bottom:16px}.time-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.time-fields input{padding:8px;font-size:12px}.form-section .seg{margin-top:12px}
+
+.notification-open{display:block;width:100%;border:0;background:none;padding:0;text-align:left}.notification-open small,.notification-open span{display:block;font-size:10px;color:#777;margin:0 0 8px}.notification-open span{margin:7px 0 0}.notification-open b{display:block}.demo-controls{border-top:1px solid var(--line);margin-top:20px;padding-top:12px}.demo-controls p{font-size:11px}.demo-controls button{font-size:11px;margin-top:6px}.demo-result{border-left:2px solid #888;padding-left:10px;font-size:12px;line-height:1.7;color:#666}.notification-empty{text-align:center;margin:35px 15px;color:#888;font-size:13px}
+
+:root{--paper:#f3f3f0;--ink:#222421;--muted:#696c66;--line:#d8dad4;--g0:#f0f0ed;--g1:#d2d4cd;--g2:#a6aaa0;--g3:#72786c;--g4:#3d4537;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}html{scroll-behavior:auto;scroll-padding-top:86px}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #555;outline-offset:3px}button:hover{filter:brightness(.94)}.page-head{max-width:1240px;margin:auto;padding:64px 32px 32px}.eyebrow,.kicker{font:11px var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}.kicker{display:flex;justify-content:space-between;gap:16px}.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:64px;margin-top:34px;align-items:end}.page-head h1{font-size:clamp(34px,4vw,54px);line-height:1.2;font-weight:600;letter-spacing:-.055em;margin:0 0 20px}.page-head h1 span{font-weight:350}.lead{font-size:15px;max-width:610px;color:#5e635b;margin:0;line-height:1.9}.hero-aside{border-top:1px solid #969b8f;padding-top:14px}.hero-aside strong{display:block;font-size:15px}.hero-aside p{font-size:13px;color:var(--muted);margin:8px 0 18px}.page-btn{background:var(--ink);color:#fff;border:1px solid var(--ink);border-radius:4px;padding:10px 16px;font-size:13px;display:inline-block}.page-btn.secondary{background:transparent;color:var(--ink)}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}.top-nav{position:sticky;top:0;z-index:10;background:rgba(243,243,240,.98);border-top:1px solid var(--line);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}.nav-inner{max-width:1240px;margin:auto;display:flex;padding:0 32px;gap:32px;overflow-x:auto}.nav-inner a{padding:15px 0;text-decoration:none;white-space:nowrap;font-size:13px}.nav-inner a span{color:#989c92;font:11px var(--mono);margin-right:8px}main{max-width:1240px;margin:auto;padding:0 32px}.overview{padding:36px 0 20px}.overview-head{display:flex;gap:20px;justify-content:space-between;align-items:center}.overview h2{font-size:17px;font-weight:600}.legend-small{font-size:12px;color:var(--muted)}.legend-small b{border:1px dashed #999;padding:3px 7px;font-weight:400;margin-left:8px}.flow{display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr;align-items:stretch;margin:12px 0}.flow>button,.flow>.flow-end{background:#fff;border:1px solid var(--line);border-radius:4px;display:flex;align-items:center;text-align:left;padding:16px;gap:16px}.flow>button span,.flow>.flow-end>span{font:12px var(--mono);color:#777}.flow b{font-size:14px;font-weight:550}.flow small{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:3px}.flow>i{align-self:center;justify-self:center;font-style:normal;color:#777}.review-guidance{font-size:13px;color:var(--muted);margin:14px 0}.board-section{padding:42px 0 30px;border-top:1px solid var(--line);margin-top:20px}.section-heading{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:30px}.section-num{font:12px var(--mono);color:var(--muted)}.section-heading h2{font-size:28px;letter-spacing:-.03em;margin:6px 0;font-weight:550}.section-heading p{font-size:14px;color:var(--muted);margin:0}.count{font:12px var(--mono);padding:8px 10px;border:1px solid var(--line);white-space:nowrap;margin-top:8px}.screen-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:38px 26px;align-items:start}.screen-card{min-width:0;scroll-margin-top:88px}.screen-heading{display:flex;align-items:center;gap:10px;min-height:30px}.screen-heading h3{font-size:15px;line-height:1.4;font-weight:550;margin:0;flex:1}.screen-id{font:11px var(--mono);color:var(--muted)}.expand{border:0;background:transparent;color:var(--muted);font-size:19px;padding:0 7px}.screen-intro{font-size:12px;color:var(--muted);margin:7px 0 16px;min-height:20px}.phone{height:720px;border:1.5px solid #555a50;border-radius:18px;background:#fff;overflow:hidden;display:flex;flex-direction:column;position:relative;max-width:370px;margin:auto;box-shadow:0 3px 0 #e2e4dc}.statusbar{height:29px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font:10px var(--mono);color:#35382f;background:#fff;z-index:1}.screen-view{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;overflow:hidden;font-size:13px;line-height:1.6}.system-bar{height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:white;z-index:1}.system-bar i{width:85px;height:4px;background:#333;border-radius:4px}.app-head{display:grid;grid-template-columns:46px 1fr 54px;align-items:center;min-height:52px;border-bottom:1px solid #eee;padding:0 8px;flex-shrink:0}.app-head>b{font-size:15px;text-align:center}.icon-btn{border:0;background:none;font-size:27px;height:42px;min-width:40px;line-height:1}.head-action{font-size:12px;border:0;background:transparent;white-space:nowrap;padding:8px 5px}.home-head{padding:19px 20px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}.home-head h2{font-size:27px;margin:3px 0 0;letter-spacing:-.04em;font-weight:550}.app-body{padding:16px 19px;overflow-y:auto;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:#cdd0c5 transparent}.app-body h3{font-size:19px;margin:4px 0 8px;font-weight:550}.app-body h4,.sheet h4{font-size:12px;font-weight:500;color:#63685d;margin:22px 0 10px}.app-body p{margin:8px 0 12px}.app-footer{padding:12px 19px 14px;border-top:1px solid #eee;flex-shrink:0;background:#fff}.app-footer .fine{margin:8px 0 0;text-align:center} .app-nav{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid #ddd;padding:8px 0 6px;flex-shrink:0;background:#fff}.app-nav button{display:flex;align-items:center;flex-direction:column;gap:1px;border:0;background:transparent;color:#858a7e;font-size:10px}.app-nav i{font-size:20px;font-style:normal;line-height:1.3}.app-nav .active{font-weight:650;color:#25291f}.btn{width:100%;padding:11px 12px;border:1px solid #a4a99d;border-radius:5px;background:#fff;text-align:center;font-size:13px;line-height:1.5;min-height:42px;display:block;margin:8px 0}.btn.primary{background:#353b2f;border-color:#353b2f;color:#fff}.btn.quiet{border-color:transparent;background:transparent;color:#626959}.btn.dashed{border-style:dashed;color:#626959}.muted{color:#69705f;font-size:13px}.fine{font-size:11px;color:#737969;line-height:1.7}.centered{text-align:center;color:#69705f}.date-line{font-size:12px;color:#777e6e;margin:0 0 17px!important}.question{font-size:15px;line-height:1.8;color:#343b2b}.app-card{border:1px solid #d9ddd2;border-radius:6px;padding:13px;margin:12px 0;background:#fff}.app-card h3{font-size:18px}.app-card p{font-size:12px;line-height:1.8}.due{border:1.5px solid #747d67}.due .badge{margin-bottom:8px}.badge{font-size:10px;display:inline-block;background:#eff1eb;border:1px solid #dce0d4;border-radius:3px;padding:2px 6px;white-space:nowrap;color:#5e6850}.between{display:flex;justify-content:space-between;align-items:center;gap:8px}.between h3{margin:0}.row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;border-bottom:1px solid #e9ece3;background:none;padding:14px 0;text-align:left}.row:last-child{border-bottom:0}.row strong{font-size:13px;font-weight:500;display:block}.row small{display:block;font-size:11px;color:#79816e;line-height:1.6;margin-top:4px}.trailing{font-size:12px;color:#79816e;flex-shrink:0}.app-card .row{padding:9px 0}.notice{background:#f1f3ed;border:1px dashed #bfc6b4;border-radius:4px;padding:12px;font-size:12px;line-height:1.8;margin:12px 0;color:#5d6651}.notice b{font-weight:550;color:#343b2c}.field{display:block;margin:12px 0 21px}.field>span{font-size:12px;display:block;margin-bottom:7px;color:#636d55}.field input,.field select,select{width:100%;min-width:0;border:1px solid #cbd1c0;border-radius:4px;padding:11px;background:white;font-size:13px;height:44px}.field small{font-size:11px;color:#7b846e;display:block;margin:7px 0 0}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.chips span{padding:6px 11px;font-size:12px;border:1px solid #cad1be;border-radius:3px}.welcome-mark{width:66px;height:66px;margin:22px 0 31px;border:1.5px solid #667355;border-radius:12px;display:grid;place-items:center;font-size:20px}.welcome h2{font-size:27px;font-weight:500;line-height:1.5;margin:10px 0 18px}.welcome p{font-size:13px;color:#7b8869;line-height:1.9}.welcome+.app-card{border:0;padding:0;margin-top:23px}.center-state{text-align:center;padding:36px 7px 22px}.state-symbol{width:65px;height:65px;display:grid;place-items:center;margin:5px auto 23px;border:1px solid #bac5ac;border-radius:50%;font-size:32px;color:#5a6a47}.center-state h3{font-size:22px!important;line-height:1.5;margin:0 0 16px!important}.center-state p{font-size:13px;line-height:1.9;color:#7f8d6c}.answer-question{font-size:25px;line-height:1.6;font-weight:500;letter-spacing:-.03em;margin:16px 0 27px}.answers .answer{display:flex;align-items:center;justify-content:space-between;text-align:left;border-color:#bfcbb1;padding:13px 16px;margin:10px 0;min-height:49px}.radio{width:17px;height:17px;border:1px solid #b5c4a3;border-radius:50%}.lock-time{text-align:center;font:52px var(--mono);letter-spacing:-4px;margin:30px 0;color:#566845}.lock-time small{display:block;font:12px -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:0;margin-top:12px}.notification{border:1px solid #b9c9a7;margin:8px 15px;border-radius:10px;padding:14px;background:#f1f5ed}.notification b{font-size:14px}.notification p{font-size:12px;margin:5px 0}.notification .fine{margin:0 0 8px}.notification-action{margin:10px 0 0;border:0;border-top:1px solid #cbd8bc;background:none;border-radius:0;min-height:36px;padding:9px 0 0;text-align:left}.system-note{font-size:10px;text-align:center;color:#8ba174;margin-top:20px}.steps{display:flex;justify-content:space-between;font-size:11px;color:#95a284;padding:8px 0 24px}.steps b{color:#52683b;font-weight:550}.seg{display:flex;background:#f1f4ed;border:1px solid #dce4d2;border-radius:5px;overflow:hidden;margin:12px 0}.seg button{flex:1;min-width:0;padding:8px 4px;border:0;border-right:1px solid #dce4d2;background:transparent;font-size:11px;white-space:nowrap}.seg button:last-child{border:0}.seg .selected{background:#fff;box-shadow:inset 0 -2px #6d8950;color:#334c19}.option-editor>div{display:flex;align-items:center;gap:10px;margin:8px 0}.option-editor>div>span{font:11px var(--mono);color:#99ab87;width:12px}.option-editor input{width:100%;min-width:0;border:1px solid #c4d5b2;border-radius:4px;padding:10px;font-size:12px}.option-editor button{border:0;background:transparent;font-size:20px;color:#a6bc90;padding:5px}.mode{display:flex;gap:11px;align-items:start;border:1px solid #d2e0c3;border-radius:5px;padding:12px;margin:10px 0}.mode input{accent-color:#607e3d;margin:4px 0 0}.mode b{display:block;font-size:12px;font-weight:550}.mode small{display:block;font-size:10px;color:#89a36e;margin-top:4px}.schedule-line{height:44px;display:flex;align-items:center;justify-content:space-around;position:relative;margin:12px 8px 0}.schedule-line:before{content:'';position:absolute;left:0;right:0;top:50%;border-top:1px dashed #abc28f}.schedule-line i{width:8px;height:8px;background:#8cae64;border-radius:50%;z-index:1}.scrim{position:absolute;inset:0;background:#dedfdc;display:flex;align-items:flex-end}.underlay{position:absolute;inset:20px;color:#989b92}.underlay>div{height:70px;border:1px solid #bdc2b6;border-radius:5px;margin-top:20px}.sheet{z-index:1;background:#fff;width:100%;padding:10px 20px 22px;border-radius:16px 16px 0 0;box-shadow:0 -1px 0 #b0b8a5;max-height:100%;overflow-y:auto}.sheet h3{font-size:18px;margin:18px 0}.sheet>p{font-size:13px;line-height:1.9}.handle{width:30px;height:4px;border-radius:3px;background:#bdcbb0;margin:0 auto}.toggle{width:35px;height:20px;border-radius:12px;border:1px solid #acbea0;background:#dce7d5;position:relative}.toggle:after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff}.toggle.on{background:#719952}.toggle.on:after{left:17px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.metrics div{border-right:1px solid #e3ecdc;text-align:center}.metrics div:last-child{border:0}.metrics b{font:25px var(--mono);display:block}.metrics b small{font:10px -apple-system,sans-serif;margin-left:4px}.metrics span{font-size:10px;color:#8ba678}.chart-stack{height:176px;border-bottom:1px solid #c5dabb;display:flex;justify-content:space-around;gap:10px;margin:20px 0 8px;padding:0 4px 0}.column{width:22px;display:flex;flex-direction:column;align-items:center}.column>small{font:9px var(--mono);color:#7c9b69;margin-bottom:5px}.column>span{font:9px var(--mono);margin-top:5px;color:#7c9b69}.stack{display:flex;flex-direction:column-reverse;height:133px;width:100%;border:1px solid #c5dabb}.stack i{display:block;width:100%;flex-shrink:0}.legend{display:flex;flex-wrap:wrap;gap:7px 12px;font-size:10px;color:#73935e;margin:15px 0}.legend>span{display:flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border:1px solid #b2cda2;border-radius:1px}.hour-chart{margin:25px 0}.hour-row{display:grid;grid-template-columns:45px 1fr 33px;gap:8px;align-items:center;margin:23px 0}.hour-row>span{font:10px var(--mono)}.hour-row>div{display:flex;height:25px;border:1px solid #b5d1a6}.hour-row b{font-size:10px;font-weight:400}.answer-large{font-size:30px;text-align:center;margin:12px}.file-space{height:230px;display:grid;align-content:center;justify-items:center;color:#88ad71}.file-space>span{font-size:46px}.file-space>p{font-size:12px}.about{margin:70px 0 0;text-align:center;font-size:12px;color:#799f62}.about p{font-size:11px}.about span{font-size:10px}.frame-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 5px;font-size:10px;color:var(--muted)}.frame-meta>span{padding:3px 7px;border:1px solid var(--line);border-radius:2px}.frame-meta .proposed{border-style:dashed}.screen-note{font-size:12px;color:var(--muted)}.screen-note summary{padding:8px 0;cursor:pointer;width:max-content}.screen-note p{line-height:1.9;margin:2px 0}.decision-section{margin:40px 0;padding:32px 0;border-top:1px solid var(--line)}.decision-section h2{font-size:25px;font-weight:550;margin:0 0 14px}.decision-section>p{font-size:14px;color:var(--muted)}.decisions{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.decisions>div{border:1px dashed #b3b9aa;padding:19px;background:#fafbf8}.decisions b{font-size:14px;font-weight:550}.decisions p{font-size:12px;color:var(--muted);line-height:1.9;margin:7px 0}.decision-num{font:11px var(--mono);color:#8c987f;display:block;margin-bottom:6px}.coverage{padding:12px 0 32px;font-size:12px}.coverage summary{cursor:pointer;font-size:14px}.coverage table{width:100%;border-collapse:collapse;margin-top:20px;font-size:12px}.coverage th,.coverage td{padding:12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.coverage th{font-weight:500}.foot{font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding:25px 0 45px;display:flex;justify-content:space-between;gap:20px}.prototype{border:0;border-radius:12px;padding:0;max-width:900px;width:calc(100vw - 36px);background:var(--paper);color:var(--ink);max-height:96vh;overflow:auto;box-shadow:0 12px 80px #0005}.prototype::backdrop{background:rgba(20,23,16,.64);backdrop-filter:blur(5px)}.prototype-top{position:sticky;top:0;z-index:5;background:var(--paper);display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}.prototype-top>b{font-size:14px}.close-modal{background:transparent;border:0;font-size:23px;line-height:1}.prototype-inner{display:grid;grid-template-columns:370px 1fr;gap:32px;padding:26px}.prototype .phone{width:100%;height:720px}.prototype-description{align-self:center}.prototype-description>span{font:12px var(--mono);color:var(--muted)}.prototype-description h2{font-size:24px;line-height:1.4;margin:10px 0 20px;font-weight:550}.prototype-description p{font-size:13px;color:var(--muted);line-height:1.9}.prototype-description .page-btn{margin:10px 5px 0 0}.demo-label{border:1px dashed var(--line);padding:10px;font-size:11px!important}.prototype-side-note{font-size:11px!important;margin-top:24px!important}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#252a20;color:white;padding:12px 20px;border-radius:6px;font-size:13px;z-index:100;max-width:90vw;width:max-content;box-shadow:0 3px 20px #0002}.toast[hidden]{display:none}.phone,.phone button,.phone input,.phone select{filter:grayscale(1)}.phone button:hover{filter:grayscale(1) brightness(.93)}
+@media(min-width:1450px){.page-head,main,.nav-inner{max-width:1350px}.screen-grid{gap:44px 36px}}
+@media(max-width:1050px){.screen-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:38px}.hero-grid{gap:30px}.nav-inner{gap:22px}.prototype-inner{grid-template-columns:350px 1fr;gap:20px}.prototype .phone{max-width:350px}.prototype-inner{padding:20px}}
+@media(max-width:700px){html{scroll-padding-top:62px}.page-head{padding:32px 20px 26px}.hero-grid{grid-template-columns:1fr;gap:25px;margin-top:25px}.page-head h1{font-size:37px}.kicker{font-size:9px;letter-spacing:.08em}.hero-aside{padding-top:16px}.hero-aside p{margin-bottom:12px}main{padding:0 20px}.nav-inner{padding:0 20px;gap:23px}.nav-inner a{font-size:12px;padding:12px 0}.nav-inner a span{display:none}.overview{padding-top:22px}.overview-head{display:block}.flow{grid-template-columns:1fr;gap:5px}.flow>i{transform:rotate(90deg);font-size:14px}.flow>button,.flow>.flow-end{padding:12px 16px}.legend-small{font-size:11px}.screen-grid{grid-template-columns:1fr;gap:32px}.screen-card{max-width:390px;width:100%;margin:auto}.screen-heading h3{font-size:16px}.screen-intro{font-size:13px}.phone{max-width:370px}.section-heading h2{font-size:25px}.section-heading{gap:10px}.section-heading p{font-size:12px}.count{font-size:10px;padding:6px}.board-section{padding-top:28px}.decisions{grid-template-columns:1fr}.prototype{width:calc(100vw - 18px);max-height:96vh}.prototype-inner{display:flex;flex-direction:column;padding:14px;gap:15px}.prototype .phone{width:100%;max-width:370px;flex-shrink:0}.prototype-description{width:100%;max-width:370px;margin:auto}.prototype-description h2{font-size:20px;margin:5px 0}.prototype-description>p{font-size:12px;margin:6px 0}.prototype-side-note{margin:8px 0!important}.prototype-top{padding:11px 14px}.prototype-top>b{font-size:12px}.coverage{overflow-x:auto}.coverage table{min-width:550px}.foot{display:block}.foot span{display:block;margin:6px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:#fff}.top-nav,.hero-actions,.expand,.prototype,.toast{display:none!important}.page-head{padding:20px 0}.hero-grid{display:block}.hero-aside{display:none}main{padding:0}.overview{display:none}.board-section{page-break-before:always;margin:0;padding-top:15px}.screen-grid{grid-template-columns:repeat(2,1fr);gap:25px}.screen-card{break-inside:avoid}.phone{height:640px}.screen-note{display:none}.decisions{grid-template-columns:1fr 1fr}.decision-section{page-break-before:always}.section-heading{margin-bottom:20px}}
+
+[hidden]{display:none!important}
+.timeline-heading{margin:12px 0 4px}.timeline-heading>b{font-size:12px;font-weight:500}
+.time-axis{height:94px;position:relative;margin:16px 16px 0;isolation:isolate}
+.time-axis-track{height:2px;background:#b6b6b6;position:absolute;top:44px;left:0;right:0}
+.time-axis-dots{position:absolute;left:0;right:0;top:29px;height:32px}
+.time-axis-dot{position:absolute;top:0;transform:translateX(-50%);width:30px;height:32px;padding:0;border:0;background:none;touch-action:none;cursor:grab;z-index:2}
+.time-axis-dot:before{content:'';display:block;width:12px;height:12px;border:2px solid #777;border-radius:50%;margin:auto;background:#fff}
+.time-axis-dot.selected{z-index:3}.time-axis-dot.selected:before{width:16px;height:16px;background:#383838;border-color:#383838}
+.time-axis-dot:active{cursor:grabbing}.time-axis-dot:focus-visible{outline:2px solid #555;border-radius:50%}
+.time-axis-value{position:absolute;top:0;left:42%;transform:translateX(-50%);font:12px var(--mono);padding:3px 7px;background:#eee;border-radius:3px;white-space:nowrap}
+.time-axis-ticks{position:absolute;top:66px;left:0;right:0;display:flex;justify-content:space-between;font:10px var(--mono);color:#888}
+.time-axis-ticks span{width:0;display:flex;justify-content:center}
+.timeline-help{margin:4px 0 15px!important;font-size:10px}
+.time-point-row{display:flex;gap:12px;align-items:center;margin:8px 0;min-height:44px;border:1px solid #ddd;border-radius:5px;padding:7px 9px}
+.time-point-row.active{border-color:#777;background:#f7f7f7}
+.point-number{display:grid;place-items:center;width:22px;height:22px;border:1px solid #ccc;border-radius:50%;font:10px var(--mono);flex-shrink:0;color:#777}
+.time-point-row input{flex:1;width:100%;min-width:0;border:0;background:transparent;height:30px;font:15px var(--mono);padding:0 5px;color:#333}
+.time-point-row button{width:28px;height:30px;border:0;background:none;color:#777;font-size:20px;padding:0;flex-shrink:0}
+.timeline-feedback{min-height:18px;margin:8px 0 0!important}
+.btn:disabled{opacity:.4;cursor:default}.time-point-list:empty:after{content:'还没有提醒时间，点击下方添加。';display:block;text-align:center;color:#777;font-size:12px;padding:25px 0}
+
+.record-feed,.stats-scroll{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#aaa #f3f3f3}
+.record-feed::-webkit-scrollbar,.stats-scroll::-webkit-scrollbar{width:4px}
+.record-feed::-webkit-scrollbar-thumb,.stats-scroll::-webkit-scrollbar-thumb{background:#aaa;border-radius:4px}
+.record-day-heading{display:flex;justify-content:space-between;align-items:center;margin:6px 0 3px;padding-top:10px}
+.record-day-heading h3{font-size:16px!important;margin:0!important}.record-day-heading small{font-size:10px;color:#888}
+.stats-link{border:0;background:transparent;text-decoration:underline;text-underline-offset:4px;font-size:12px;padding:9px 0}
+.sample-row{display:flex;width:100%;align-items:center;gap:12px;border:0;border-bottom:1px solid #e6e6e6;background:none;padding:15px 0;text-align:left;font-size:13px;min-height:66px}
+.sample-time{font:12px var(--mono);width:45px;flex-shrink:0;color:#777}.sample-answer{flex:1;min-width:0}.sample-answer strong{display:block;font-weight:500;font-size:14px}.sample-answer small{display:block;font-size:10px;line-height:1.6;color:#888;margin-top:3px}.sample-tag{font-size:10px;color:#888;white-space:nowrap}.sample-row.pending{background:#f5f5f5;padding-left:9px;padding-right:9px;border-radius:5px;border:1px solid #ccc;margin:6px 0}.sample-row.pending .sample-tag{color:#333}
+.record-day{margin:0 0 14px}.history-sentinel{font-size:11px;text-align:center;color:#888;padding:16px 0 24px;min-height:50px}
+.project-detail-top{position:sticky;top:-16px;z-index:2;background:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;padding-top:4px;padding-bottom:10px;margin-bottom:12px}.project-detail-top b{font-size:14px;font-weight:500}.project-detail-top small{font-size:10px;color:#888}
+.stats-context{font-size:13px;font-weight:500;margin:0 0 4px}.stats-range{font-size:11px;color:#777;margin:0 0 15px!important}
+.stat-section{padding:25px 0 20px;border-top:1px solid #ddd}.stat-section h3{font-size:17px!important;margin:0 0 7px!important}.stat-section .fine{margin:0 0 10px!important}.stat-section .chart-stack{margin-top:18px}.stats-scroll .metrics{margin:14px 0 24px}.stat-empty{text-align:center;color:#888;font-size:12px;padding:36px 10px;border:1px dashed #ddd;border-radius:5px;margin:14px 0}
+.option-stat{display:grid;grid-template-columns:46px minmax(0,1fr) 64px;gap:10px;align-items:center;margin:16px 0;font-size:11px}.option-bar{height:10px;background:#eee;border-radius:2px;overflow:hidden}.option-bar i{display:block;height:100%;background:#888}.option-value{text-align:right;color:#777;font:10px var(--mono)}
+.form-section[data-form-block="reminder"]{border-bottom:0;margin-bottom:0}.form-danger{border-top:1px solid #ddd;padding-top:22px;margin-top:20px;margin-bottom:8px}.form-danger .btn{border-color:#999;background:transparent}.form-danger p{margin-bottom:0!important}
+</style></head><body>
+<header class="page-head"><div class="kicker"><span>NOWLY / PRODUCT WIREFRAMES</span><span>ANDROID MVP · 2026.09.17 · V0.8</span></div><div class="hero-grid"><div><h1>此刻，先看清体验。<br><span>首版 MVP 线框图</span></h1><p class="lead">打开即项目首页，收到提醒就记录，积累之后看统计。去掉首次引导和本地数据管理，保留首版的核心流程。</p></div><aside class="hero-aside"><strong>首页 → 项目详情 → 编辑 / 统计</strong><p>10 张界面与状态示意，包含弹窗和空状态。虚线标注仍为拟议；示例数据不代表真实记录。</p><div class="hero-actions"><button class="page-btn" data-go="B01">从首页开始 ↗</button><button class="page-btn secondary" data-go="C01">点击体验记录流程 ↗</button><button class="page-btn secondary" id="expand-notes">展开设计说明</button></div></aside></div></header>
+<nav class="top-nav" aria-label="线框目录"><div class="nav-inner"><a href="#daily"><span>01</span>项目与日常</a><a href="#answer"><span>02</span>完成一次记录</a><a href="#project"><span>03</span>创建与管理</a><a href="#review"><span>04</span>回看与统计</a><a href="#decisions"><span>05</span>待定事项</a></div></nav>
+<main><section class="overview"><div class="overview-head"><h2>先看这条最短路径</h2><div class="legend-small">点击按钮可跳转线框 · 点击 ↗ 放大 <b>拟议 = 待讨论</b></div></div><div class="flow"><button data-go="C01"><span>01</span><div><b>收到项目提醒</b><small>通知说明要记录什么</small></div></button><i>→</i><button data-go="C02"><span>02</span><div><b>选择一个答案</b><small>不增加提交和确认步骤</small></div></button><i>→</i><div class="flow-end"><span>03</span><div><b>保存后直接返回</b><small>无成功页，也无额外确认</small></div></div></div><p class="review-guidance">浏览方式：顺着目录看全貌，或点进任意手机按钮串联页面。交互只用于评审布局与跳转，表单值、统计筛选和数据存储尚未接通。</p><p class="demo-result" data-demo-result aria-live="polite">v0.8：选项使用稳定 ID，改名同步历史与统计，记录时间和数量不变。D07 已移除，编辑直接保存返回详情。</p></section><section class="board-section" id="daily"><div class="section-heading"><div><span class="section-num">01</span><h2>项目与日常</h2><p>首页进入项目，详情直接浏览当天与历史记录。</p></div><span class="count">3 个界面 / 状态</span></div><div class="screen-grid"><article class="screen-card" id="B01"><div class="screen-heading"><span class="screen-id">B01</span><h3>项目首页</h3><button class="expand" data-go="B01" aria-label="放大 B01 项目首页">↗</button></div><p class="screen-intro">提醒默认开启，点标题进入详情，右上角开关控制。</p><div class="phone" data-screen="B01"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="home-head"><div><span class="eyebrow">NOWLY</span><h2>此刻</h2></div><button class="icon-btn" data-go="D01" aria-label="创建项目">＋</button></header><div class="app-body "><p class="date-line">9 月 17 日，星期四</p><div class="app-card project-tile " data-card-project="心情"><div class="between project-card-heading"><h3 class="project-name"><button class="project-title" data-go="B02" data-project="心情" aria-label="心情">心情<span aria-hidden="true">›</span></button></h3><button class="toggle on reminder-switch" role="switch" aria-checked="true" aria-label="心情提醒" data-reminder-toggle="心情"></button></div><p class="question">此刻，你的心情怎么样？</p><div class="chips"><span>很不好</span><span>不太好</span><span>一般</span><span>不错</span><span>很好</span></div><p class="fine project-schedule">每天 5 次 · 手动时间点</p></div><button class="btn dashed" data-go="D01" >＋ 创建记录项目</button></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span><span class="proposed">默认内容拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：预置和新建项目默认开启提醒。首页右上角滑块直接控制，不显示开启状态标签或单独开启按钮；点击项目标题进入详情，不再有查看项目区域。默认开启不代表系统通知已获授权，权限由系统请求。预置文案与默认时刻仍为拟议。</p></details></article><article class="screen-card" id="B02"><div class="screen-heading"><span class="screen-id">B02</span><h3>项目详情 · 采样记录</h3><button class="expand" data-go="B02" aria-label="放大 B02 项目详情 · 采样记录">↗</button></div><p class="screen-intro">直接看今天的记录，向下滑动加载历史。</p><div class="phone" data-screen="B02"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="app-head"><button class="icon-btn" data-go="B01" aria-label="返回">‹</button><b>心理压力</b><button class="head-action" data-go="D01">设置</button></header><div class="app-body record-feed"><div class="project-detail-top"><b>采样记录</b><button class="stats-link" data-go="E01">查看统计</button></div><div data-record-feed-content></div><div class="history-sentinel" data-history-sentinel role="status">向下滑动查看更早记录</div></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：移除提醒配置方框，设置直达编辑；记录按日期在详情内浏览，向下滚动自动加载更早历史。仅待处理项可进入回答，已结束记录不再跳转独立详情页。原型提供 7 天示例、初始显示 2 天，每次追加 2 天；正式分页大小及排序待规格。</p></details></article><article class="screen-card" id="B03"><div class="screen-heading"><span class="screen-id">B03</span><h3>没有记录项目</h3><button class="expand" data-go="B03" aria-label="放大 B03 没有记录项目">↗</button></div><p class="screen-intro">删除全部项目后的正常空状态。</p><div class="phone" data-screen="B03"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="home-head"><div><span class="eyebrow">NOWLY</span><h2>此刻</h2></div></header><div class="app-body "><div class="center-state"><div class="state-symbol">＋</div><h3>从一个小问题开始</h3><p>创建一个记录项目，设置问题、选项和提醒。</p></div><button class="btn primary" data-go="D01" >创建记录项目</button></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span><span class="proposed">删除行为拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>不会自动重新创建已删除的心情项目；首次安装时直接在首页预置心情项目。删除对历史数据的具体影响仍为拟议。</p></details></article></div></section><section class="board-section" id="answer"><div class="section-heading"><div><span class="section-num">02</span><h2>完成一次记录</h2><p>通知 → 选择答案 → 直接返回。填写时间就是记录时间。</p></div><span class="count">2 个界面 / 状态</span></div><div class="screen-grid"><article class="screen-card" id="C01"><div class="screen-heading"><span class="screen-id">C01</span><h3>采样通知</h3><button class="expand" data-go="C01" aria-label="放大 C01 采样通知">↗</button></div><p class="screen-intro">点通知回答；点跳过或划掉结束本次提醒。</p><div class="phone" data-screen="C01"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><div class="lock-time">15:02<small>9 月 17 日，星期四</small></div><div class="notification" data-notification-project="心理压力"><button class="notification-open" data-go="C02" data-project="心理压力" aria-label="记录心理压力"><small>◯ 此刻 · Nowly　现在</small><b>心理压力</b><p>此刻，你感到多大压力？</p><span>轻触通知，记录当下</span></button><button class="btn notification-action"  data-skip="心理压力" aria-label="跳过心理压力">跳过</button></div><div class="notification" data-notification-project="心情"><button class="notification-open" data-go="C02" data-project="心情" aria-label="记录心情"><small>◯ 此刻 · Nowly　现在</small><b>心情</b><p>此刻，你的心情怎么样？</p><span>轻触通知，记录当下</span></button><button class="btn notification-action"  data-skip="心情" aria-label="跳过心情">跳过</button></div><p class="system-note">系统通知示意，非 Android 精确样式。</p></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>系统界面示意</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：通知正文进入回答页；跳过按钮、划掉或全部清除记为已跳过，不产生答案。同一项目只保留最新待处理通知；旧的被新提醒替换时记未处理。通知进入作答后，点选会关闭预览以模拟直接返回原界面。</p></details></article><article class="screen-card" id="C02"><div class="screen-heading"><span class="screen-id">C02</span><h3>选择答案</h3><button class="expand" data-go="C02" aria-label="放大 C02 选择答案">↗</button></div><p class="screen-intro">核心界面：选择即保存。</p><div class="phone" data-screen="C02"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="app-head"><button class="icon-btn" data-answer-back aria-label="返回">‹</button><b>记录此刻</b><span></span></header><div class="app-body "><span class="eyebrow" data-current-project>心理压力</span><h2 class="answer-question" data-current-question>此刻，你感到<br>多大压力？</h2><div class="answers" data-options><button class="btn answer"  data-answer-id="pressure-option-1"><span>无</span><span class="radio"></span></button><button class="btn answer"  data-answer-id="pressure-option-2"><span>轻微</span><span class="radio"></span></button><button class="btn answer"  data-answer-id="pressure-option-3"><span>中等</span><span class="radio"></span></button><button class="btn answer"  data-answer-id="pressure-option-4"><span>较高</span><span class="radio"></span></button><button class="btn answer"  data-answer-id="pressure-option-5"><span>很高</span><span class="radio"></span></button></div><p class="fine">记录你现在的状态。轻点即保存并返回。</p></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：以实际填写、选择答案的时间记录，保存后直接返回来源。没有提交按钮、保存成功页、过期页或保存失败页；保存异常视为实现缺陷。未作答就返回时，演示暂保留待处理，正式规则仍待规格确认。</p></details></article></div></section><section class="board-section" id="project"><div class="section-heading"><div><span class="section-num">03</span><h2>创建与管理</h2><p>名称、问题、选项和提醒，在一张滚动表单内完成。</p></div><span class="count">2 个界面 / 状态</span></div><div class="screen-grid"><article class="screen-card" id="D01"><div class="screen-heading"><span class="screen-id">D01</span><h3>创建 / 编辑项目</h3><button class="expand" data-go="D01" aria-label="放大 D01 创建 / 编辑项目">↗</button></div><p class="screen-intro">所有字段在同一页；在手机内上下滚动查看。</p><div class="phone" data-screen="D01"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="app-head"><button class="icon-btn" data-go="B01" aria-label="返回">‹</button><b>创建记录项目</b><span></span></header><div class="app-body project-form"><section class="form-section" data-form-block="info"><h3>项目信息</h3><label class="field"><span>项目名称</span><input type="text" value="心理压力" aria-label="项目名称"></label><label class="field"><span>采样问题</span><input type="text" value="此刻，你感到多大压力？" aria-label="采样问题"><small>一个项目只问一个问题。</small></label></section><section class="form-section" data-form-block="options"><h3>回答选项</h3><p class="fine">单选，点选即记录。改名后，历史和统计也显示新名称。</p><div class="seg"><button class="" data-select>普通分类</button><button class="selected" data-select>有序等级</button></div><p class="fine">有序等级按从低到高排列。</p><div class="option-editor"><div data-option-id="pressure-option-1"><span>1</span><input aria-label="选项 1" value="无"><button aria-label="删除选项 无" data-remove>×</button></div><div data-option-id="pressure-option-2"><span>2</span><input aria-label="选项 2" value="轻微"><button aria-label="删除选项 轻微" data-remove>×</button></div><div data-option-id="pressure-option-3"><span>3</span><input aria-label="选项 3" value="中等"><button aria-label="删除选项 中等" data-remove>×</button></div><div data-option-id="pressure-option-4"><span>4</span><input aria-label="选项 4" value="较高"><button aria-label="删除选项 较高" data-remove>×</button></div><div data-option-id="pressure-option-5"><span>5</span><input aria-label="选项 5" value="很高"><button aria-label="删除选项 很高" data-remove>×</button></div></div><button class="btn dashed"  data-add>＋ 添加选项</button><p class="fine" data-option-feedback role="status" hidden></p></section><section class="form-section" data-form-block="reminder"><h3>采样提醒</h3><div class="timeline-editor" data-timeline data-initial-times="[&quot;10:00&quot;, &quot;12:00&quot;, &quot;15:00&quot;, &quot;17:00&quot;, &quot;20:00&quot;]">
+      <div class="between timeline-heading"><b>每天的提醒时间</b><span class="badge" data-point-count>每天 5 次</span></div>
+      <div class="time-axis" role="group" aria-label="一天的提醒时间轴">
+        <output class="time-axis-value" data-active-time>10:00</output>
+        <div class="time-axis-track" data-axis-track></div>
+        <div class="time-axis-dots" data-axis-dots></div>
+        <div class="time-axis-ticks"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div>
+      </div>
+      <p class="fine timeline-help">拖动圆点调整时间，也可点下方时间精确设置。</p>
+      <div class="time-point-list" data-time-list><div class="time-point-row"><span class="point-number">1</span><input type="time" aria-label="提醒时间 1" value="10:00"><button type="button" aria-label="删除 10:00 的提醒">×</button></div><div class="time-point-row"><span class="point-number">2</span><input type="time" aria-label="提醒时间 2" value="12:00"><button type="button" aria-label="删除 12:00 的提醒">×</button></div><div class="time-point-row"><span class="point-number">3</span><input type="time" aria-label="提醒时间 3" value="15:00"><button type="button" aria-label="删除 15:00 的提醒">×</button></div><div class="time-point-row"><span class="point-number">4</span><input type="time" aria-label="提醒时间 4" value="17:00"><button type="button" aria-label="删除 17:00 的提醒">×</button></div><div class="time-point-row"><span class="point-number">5</span><input type="time" aria-label="提醒时间 5" value="20:00"><button type="button" aria-label="删除 20:00 的提醒">×</button></div></div>
+      <button class="btn dashed" type="button" data-add-time>＋ 添加提醒时间</button>
+      <p class="timeline-feedback fine" data-timeline-feedback role="status" aria-live="polite"></p>
+    </div><p class="fine">首次使用提醒时，会请求系统通知权限。</p></section><section class="form-danger" data-edit-only hidden><button class="btn " data-go="D06" >删除项目</button><p class="fine">删除项目及其记录，此操作无法撤销。</p></section></div><div class="app-footer"><button class="btn primary" data-go="B02" data-save-project>保存项目</button></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span><span class="proposed">部分字段规则拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：设置直接进入此页，编辑时在表单最底部提供删除入口，新建时隐藏。名称、问题、选项和每日提醒时间点同页设置。时间轴可拖动，也可精确输入；支持增删并自动排序、更新次数。首版只保留手动时间点。原型默认五点，拖动按 15 分钟粗调，精确修改到分钟；暂不允许重复时间或空时间列表，这些边界仍为拟议。选项有稳定 ID，改名同步历史与统计，时间和数量不变。编辑直接保存返回详情，不经过修改影响页。演示数据只在页面内保留，不连接真实存储。</p></details></article><article class="screen-card" id="D06"><div class="screen-heading"><span class="screen-id">D06</span><h3>删除项目确认</h3><button class="expand" data-go="D06" aria-label="放大 D06 删除项目确认">↗</button></div><p class="screen-intro">不可撤销的操作要说明对象。</p><div class="phone" data-screen="D06"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><div class="scrim"><div class="underlay"><b>此刻 · Nowly</b><div></div><div></div><div></div></div><section class="sheet"><div class="handle"></div><h3>删除「心理压力」？</h3><p>这会移除该项目和它在本机的全部记录，并停止后续提醒。</p><p class="muted">此操作无法撤销。</p><button class="btn primary"  data-delete-project>删除项目及记录</button><button class="btn quiet" data-go="D01" >取消</button></section></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用确认面板</span><span class="proposed">删除规则拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>编辑页底部提供删除入口；此稿建议项目与记录一并删除，具体历史数据语义仍待确认。取消后回到原编辑表单并保留草稿。演示只改变预览，不删除真实数据。</p></details></article></div></section><section class="board-section" id="review"><div class="section-heading"><div><span class="section-num">04</span><h2>回看与统计</h2><p>从项目进入，一页看日期、时段和选项统计。</p></div><span class="count">3 个界面 / 状态</span></div><div class="screen-grid"><article class="screen-card" id="E01"><div class="screen-heading"><span class="screen-id">E01</span><h3>项目统计 · 三类统计同页</h3><button class="expand" data-go="E01" aria-label="放大 E01 项目统计 · 三类统计同页">↗</button></div><p class="screen-intro">日期趋势、时段分布和按选项统计，纵向滚动查看。</p><div class="phone" data-screen="E01"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="app-head"><button class="icon-btn" data-go="B02" aria-label="返回">‹</button><b>项目统计</b><button class="head-action" data-go="E04">筛选</button></header><div class="app-body stats-scroll"><div data-stats-content data-empty="false"><p class="fine">正在显示统计…</p></div></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span><span class="proposed">图形与部分口径拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>已确认：统计从当前项目详情进入，三类统计在同页纵向展示，只按日期筛选；不再提供记录查看入口。三图使用同一批示例回答计算。选项统计的占比分母仅为已回答；示例共 25 回答、3 跳过、4 未处理。图形、时段边界及非回答的日期归属仍为拟议。</p></details></article><article class="screen-card" id="E04"><div class="screen-heading"><span class="screen-id">E04</span><h3>统计筛选 · 仅日期</h3><button class="expand" data-go="E04" aria-label="放大 E04 统计筛选 · 仅日期">↗</button></div><p class="screen-intro">统计已属于当前项目，只需选择日期。</p><div class="phone" data-screen="E04"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><div class="scrim"><div class="underlay"><b>此刻 · Nowly</b><div></div><div></div><div></div></div><section class="sheet"><div class="handle"></div><h3>选择日期范围</h3><div class="seg" data-range-buttons><button class="selected" data-range-days="7">最近 7 天</button><button data-range-days="30">最近 30 天</button><button data-range-custom>自定义</button></div>
+    <label class="field"><span>开始日期</span><input type="date" aria-label="开始日期" value="2026-09-11"></label>
+    <label class="field"><span>结束日期</span><input type="date" aria-label="结束日期" value="2026-09-17"></label>
+    <p class="fine" data-date-feedback role="status"></p><button class="btn primary" data-go="E01" data-apply-filter>应用筛选</button><button class="btn quiet" data-go="E01" >取消</button></section></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用底部面板</span><span class="proposed">快捷日期范围拟议</span></div><details class="screen-note"><summary>设计说明</summary><p>项目固定为进入统计时的项目，不提供项目选择。日期筛选会同时更新三类统计；预览有 2026-09-11 至 09-17 的示例数据，其他范围可检验空状态。</p></details></article><article class="screen-card" id="E07"><div class="screen-heading"><span class="screen-id">E07</span><h3>项目统计 · 暂无数据</h3><button class="expand" data-go="E07" aria-label="放大 E07 项目统计 · 暂无数据">↗</button></div><p class="screen-intro">同一统计页面的空数据状态。</p><div class="phone" data-screen="E07"><div class="statusbar"><span>15:02</span><span>▂▄▆　▰</span></div><div class="screen-view"><header class="app-head"><button class="icon-btn" data-go="B02" aria-label="返回">‹</button><b>项目统计</b><button class="head-action" data-go="E04">筛选</button></header><div class="app-body stats-scroll"><div data-stats-content data-empty="true"><p class="fine">正在显示统计…</p></div></div></div><div class="system-bar"><i></i></div></div><div class="frame-meta"><span>应用界面</span></div><details class="screen-note"><summary>设计说明</summary><p>没有回答时，三类统计都显示空状态，不把跳过或未处理算成零值答案。此屏是同一统计页面的状态示意，不是额外导航页面。</p></details></article></div></section>
+<section class="decision-section" id="decisions"><span class="section-num">05 / OPEN DECISIONS</span><h2>线框已经具体，规则仍可讨论。</h2><p>记录通过稳定选项 ID 关联标签，改名无需拆分历史。页面围绕项目组织；默认值、删除和问题变更等细节仍为拟议。</p><div class="decisions">
+<div><span class="decision-num">01 / 记录入口</span><b>先点击通知，再单选即保存</b><p>已确认：通知正文进入回答，点选即按填写时间保存并直接返回。无单独成功页或失败页。误触修正与未作答返回仍待规格确认。</p><a href="#C02">查看 C02 →</a></div>
+<div><span class="decision-num">02 / 项目与历史</span><b>标签改名同步历史，记录时间不变</b><p>记录引用稳定选项 ID，显示当前名称；改名不改变 ID、时间或统计次数，不按文字重新分组。新增选项分配新 ID，移出的选项保留历史引用。编辑无需修改影响确认页。</p><a href="#D01">查看 D01 编辑页 →</a></div>
+<div><span class="decision-num">03 / 统计</span><b>日期、时段、选项，同页查看</b><p>统计锁定当前项目，只筛选日期。日期与时段按填写时间分组，选项显示次数与占比；跳过、未处理不进入答案分布。统计页不再链接独立记录页面。</p><a href="#E01">查看 E01 合并统计 →</a></div>
+<div><span class="decision-num">04 / 提醒规则</span><b>新提醒替换旧提醒，不设置超时期限</b><p>已确认：每项目保留最新待处理通知，旧的被替换后标为未处理；点跳过、划掉记已跳过。提醒改为手动时间点；最少/最多时间点、重复时刻、当天修改与已打开回答页时收到新提醒等边界待定。</p><a href="#D01">查看 D01 的提醒设置 →</a></div>
+<div><span class="decision-num">05 / 首版范围</span><b>直接使用，本地自动保存</b><p>去掉欢迎、首次引导、初始项目确认和本地数据管理。导出推迟到后续版本，记录仍自动保存在本机。项目首页直接带一个心情项目，提醒默认开启；点击标题查看详情。</p><a href="#B01">查看 B01 →</a></div>
+<div><span class="decision-num">06 / 通知权限</span><b>默认开启与系统授权分别管理</b><p>项目默认开启不代表系统已授权。不新增独立权限引导页；首次需要授权时使用 Android 系统弹窗，具体触发时机及恢复入口留待规格。</p><a href="#D01">查看 D01 →</a></div>
+</div></section>
+<details class="coverage"><summary>查看需求覆盖表与暂未实现的交互</summary><table><thead><tr><th>需求 / 体验</th><th>对应线框</th><th>说明</th></tr></thead><tbody>
+<tr><td>Android、本地、无登录</td><td>B01</td><td>自动本地保存，没有账号、全局数据管理或导出入口。</td></tr>
+<tr><td>预置心情、自建单问题项目</td><td>B01 / D01</td><td>首页即见心情、提醒默认开启；点标题进详情、右上角开关控制。</td></tr>
+<tr><td>每项目独立的手动提醒时间点</td><td>D01</td><td>五点起步的原型支持调整、增删与排序，次数等于时间点数量；自动模式已移除。</td></tr>
+<tr><td>选择即保存、自然错过</td><td>C01–C02</td><td>点选即保存并直接返回；移除原成功、过期、保存失败页面。</td></tr>
+<tr><td>多项目与状态区别</td><td>B01–B02 / C01</td><td>待提醒、待处理、已回答、已跳过、未处理分开。</td></tr>
+<tr><td>三类统计与日期筛选</td><td>E01 / E04 / E07</td><td>按日期、时段、选项同页统计；项目固定，空数据不算零值。</td></tr>
+<tr><td>首次引导 / 数据管理 / 导出</td><td>本轮移除</td><td>自动本地保存保留；文件导出推迟到后续版本。</td></tr>
+<tr><td>管理、历史、设备异常</td><td>B02–B03 / D01 / D06</td><td>改名同步历史与统计；编辑直接保存，删除的具体历史数据语义仍为拟议。</td></tr>
+<tr><td>本次交互的界限</td><td>所有界面</td><td>支持页面跳转、返回、通知处理、时间轴编辑、历史增量加载与三图联动日期筛选。示例数据仅在页面内运行；选项改名通过稳定 ID 联动历史与统计；系统授权、真实存储、提醒调度和删除均未实现。</td></tr>
+</tbody></table></details>
+<footer class="foot"><span>依据：nowly-initial-requirements.md · 已确认的产品意图 v8</span><span>全文件离线可用 · 无外部资源 · 评审草案，非功能交付</span></footer></main>
+<template id="home-daily"><header class="home-head"><div><span class="eyebrow">NOWLY</span><h2>此刻</h2></div><button class="icon-btn" data-go="D01" aria-label="创建项目">＋</button></header><div class="app-body "><p class="date-line">9 月 17 日，星期四</p><div class="app-card project-tile due" data-card-project="心理压力"><div class="between project-card-heading"><h3 class="project-name"><button class="project-title" data-go="B02" data-project="心理压力" aria-label="心理压力">心理压力<span aria-hidden="true">›</span></button></h3><button class="toggle on reminder-switch" role="switch" aria-checked="true" aria-label="心理压力提醒" data-reminder-toggle="心理压力"></button></div><span class="badge">待处理</span><p>此刻，你感到多大压力？</p><button class="btn primary" data-go="C02" >回答这次提醒</button></div><div class="app-card project-tile " data-card-project="心情"><div class="between project-card-heading"><h3 class="project-name"><button class="project-title" data-go="B02" data-project="心情" aria-label="心情">心情<span aria-hidden="true">›</span></button></h3><button class="toggle on reminder-switch" role="switch" aria-checked="true" aria-label="心情提醒" data-reminder-toggle="心情"></button></div><p class="question">此刻，你的心情怎么样？</p><p class="fine project-schedule">每天 5 次 · 手动时间点</p></div><button class="btn dashed" data-go="D01" >＋ 创建记录项目</button><p class="fine">每个项目只保留最新一条待处理提醒。回答时记录当下，不回填过去。</p></div></template><dialog id="prototype" class="prototype" aria-labelledby="demo-title"><div class="prototype-top"><b>界面预览 / 点击手机内的按钮继续</b><button class="close-modal" data-close aria-label="关闭预览">×</button></div><div class="prototype-inner"><div id="prototype-stage"></div><aside class="prototype-description"><span id="demo-id"></span><h2 id="demo-title"></h2><p id="demo-note"></p><p class="demo-label">这是线框跳转演示。输入仅用于看布局；不会保存项目或发送真实通知。</p><button class="page-btn secondary" id="demo-back">← 上一屏</button><button class="page-btn secondary" id="demo-restart">从通知重新体验</button><p><a id="demo-locate" href="#">回到全图中的这个界面 ↗</a></p><div id="home-demo-controls" class="demo-controls" hidden><p>同一首页的两种状态，不是额外引导页面。</p><button class="page-btn secondary" data-home-mode="first">首次打开</button><button class="page-btn secondary" data-home-mode="daily">日常使用</button></div><div id="notification-demo-controls" class="demo-controls" hidden><p>以下是线框演示工具，不属于 App 界面。</p><button class="page-btn secondary" data-simulate-next>模拟下次压力提醒</button><button class="page-btn secondary" data-simulate-swipe>模拟划掉压力通知</button></div><p class="demo-result" data-demo-result aria-live="polite">通知入口作答后关闭预览，模拟返回原界面；App 内入口则回到原页面。</p><p class="prototype-side-note">按 Esc 退出预览。待定规则在各屏「设计说明」中标明。</p></aside></div></dialog><div id="toast" class="toast" role="status" hidden></div><script>
+const screens = {"B01": {"title": "项目首页", "note": "已确认：预置和新建项目默认开启提醒。首页右上角滑块直接控制，不显示开启状态标签或单独开启按钮；点击项目标题进入详情，不再有查看项目区域。默认开启不代表系统通知已获授权，权限由系统请求。预置文案与默认时刻仍为拟议。", "intro": "提醒默认开启，点标题进入详情，右上角开关控制。", "origin": "应用界面"}, "B02": {"title": "项目详情 · 采样记录", "note": "已确认：移除提醒配置方框，设置直达编辑；记录按日期在详情内浏览，向下滚动自动加载更早历史。仅待处理项可进入回答，已结束记录不再跳转独立详情页。原型提供 7 天示例、初始显示 2 天，每次追加 2 天；正式分页大小及排序待规格。", "intro": "直接看今天的记录，向下滑动加载历史。", "origin": "应用界面"}, "B03": {"title": "没有记录项目", "note": "不会自动重新创建已删除的心情项目；首次安装时直接在首页预置心情项目。删除对历史数据的具体影响仍为拟议。", "intro": "删除全部项目后的正常空状态。", "origin": "应用界面"}, "C01": {"title": "采样通知", "note": "已确认：通知正文进入回答页；跳过按钮、划掉或全部清除记为已跳过，不产生答案。同一项目只保留最新待处理通知；旧的被新提醒替换时记未处理。通知进入作答后，点选会关闭预览以模拟直接返回原界面。", "intro": "点通知回答；点跳过或划掉结束本次提醒。", "origin": "系统界面示意"}, "C02": {"title": "选择答案", "note": "已确认：以实际填写、选择答案的时间记录，保存后直接返回来源。没有提交按钮、保存成功页、过期页或保存失败页；保存异常视为实现缺陷。未作答就返回时，演示暂保留待处理，正式规则仍待规格确认。", "intro": "核心界面：选择即保存。", "origin": "应用界面"}, "D01": {"title": "创建 / 编辑项目", "note": "已确认：设置直接进入此页，编辑时在表单最底部提供删除入口，新建时隐藏。名称、问题、选项和每日提醒时间点同页设置。时间轴可拖动，也可精确输入；支持增删并自动排序、更新次数。首版只保留手动时间点。原型默认五点，拖动按 15 分钟粗调，精确修改到分钟；暂不允许重复时间或空时间列表，这些边界仍为拟议。选项有稳定 ID，改名同步历史与统计，时间和数量不变。编辑直接保存返回详情，不经过修改影响页。演示数据只在页面内保留，不连接真实存储。", "intro": "所有字段在同一页；在手机内上下滚动查看。", "origin": "应用界面"}, "D06": {"title": "删除项目确认", "note": "编辑页底部提供删除入口；此稿建议项目与记录一并删除，具体历史数据语义仍待确认。取消后回到原编辑表单并保留草稿。演示只改变预览，不删除真实数据。", "intro": "不可撤销的操作要说明对象。", "origin": "应用确认面板"}, "E01": {"title": "项目统计 · 三类统计同页", "note": "已确认：统计从当前项目详情进入，三类统计在同页纵向展示，只按日期筛选；不再提供记录查看入口。三图使用同一批示例回答计算。选项统计的占比分母仅为已回答；示例共 25 回答、3 跳过、4 未处理。图形、时段边界及非回答的日期归属仍为拟议。", "intro": "日期趋势、时段分布和按选项统计，纵向滚动查看。", "origin": "应用界面"}, "E04": {"title": "统计筛选 · 仅日期", "note": "项目固定为进入统计时的项目，不提供项目选择。日期筛选会同时更新三类统计；预览有 2026-09-11 至 09-17 的示例数据，其他范围可检验空状态。", "intro": "统计已属于当前项目，只需选择日期。", "origin": "应用底部面板"}, "E07": {"title": "项目统计 · 暂无数据", "note": "没有回答时，三类统计都显示空状态，不把跳过或未处理算成零值答案。此屏是同一统计页面的状态示意，不是额外导航页面。", "intro": "同一统计页面的空数据状态。", "origin": "应用界面"}};
+const modal = document.getElementById('prototype');
+const stage = document.getElementById('prototype-stage');
+let current = '', trail = [], entry = null, toastTimer, currentProject = '心理压力', editing = false;
+let answerReturn = null;
+let homeMode = 'first';
+const reminderStates = { '心理压力':true, '心情':true };
+let formDraft = null, formSection = '', formReturn = 'B01';
+const previewSchedules = {};
+const deletedProjects = new Set();
+const notificationState = { '心理压力': {status:'待处理'}, '心情': {status:'待处理'} };
+const demoHistory = [];
+function syncReminderSwitches(root=document){
+ root.querySelectorAll('[data-reminder-toggle]').forEach(toggle=>{
+   const project=toggle.dataset.reminderToggle,enabled=reminderStates[project]!==false;
+   toggle.classList.toggle('on',enabled);toggle.setAttribute('aria-checked',String(enabled));toggle.setAttribute('aria-label',project+'提醒');
+ });
+}
+function demoResult(message){document.querySelectorAll('[data-demo-result]').forEach(el=>el.textContent=message);}
+function returnFromAnswer(){
+ if(answerReturn){const target=answerReturn;homeMode='daily';trail=[];current='';renderScreen(target,false);}
+ else if(modal.open){closeModal();}
+}
+function finishAnswer(optionId){
+ const option=activeProjectOptions(currentProject).find(item=>item.id===optionId);if(!option)return;
+ const state=notificationState[currentProject];
+ if(state.status!=='待处理'){returnFromAnswer();return;}
+ const answeredAt=new Date().toISOString();
+ Object.assign(state,{status:'已回答',optionId,answeredAt});
+ demoHistory.push({project:currentProject,status:'已回答',optionId,answeredAt});
+ demoResult('刚才的演示：'+currentProject+' · '+option.label+'，按实际填写时间 '+new Date(answeredAt).toLocaleTimeString('zh-CN',{hour12:false})+' 记录，并直接返回。');
+ returnFromAnswer();
+}
+function skipNotification(project){
+ if(notificationState[project]?.status!=='待处理')return;
+ notificationState[project]={status:'已跳过'};
+ demoHistory.push({project,status:'已跳过'});
+ demoResult('刚才的演示：'+project+' 已跳过；不产生答案或填写时间。');
+ if(!modal.open)openScreen('C01');else renderScreen('C01',false);
+}
+function announce(message){ const el = document.getElementById('toast'); el.textContent=message; el.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.hidden=true,4200); }
+function renderScreen(id, push=true){
+ if(!screens[id]) return;
+ if(current && push) trail.push(current);
+ current=id;
+ modal.scrollTop=0;
+ const original=document.querySelector(`main [data-screen="${id}"]`);
+ stage.replaceChildren(original.cloneNode(true));
+ if(id==='B01' && homeMode==='daily')stage.querySelector('.screen-view').replaceChildren(document.getElementById('home-daily').content.cloneNode(true));
+ if(id==='B01'){stage.querySelectorAll('[data-card-project]').forEach(card=>{if(deletedProjects.has(card.dataset.cardProject))card.remove();});if(!stage.querySelector('[data-card-project]')){renderScreen('B03',false);return;}}
+ stage.querySelectorAll('[data-card-project]').forEach(card=>{const chips=card.querySelector('.chips');if(chips){chips.replaceChildren();activeProjectOptions(card.dataset.cardProject).forEach(option=>{const span=document.createElement('span');span.textContent=option.label;chips.append(span);});}});
+ stage.querySelectorAll('input[type="radio"]').forEach(i=>i.name='demo-'+i.name);
+ document.getElementById('demo-id').textContent=id+' / '+screens[id].origin;
+ document.getElementById('demo-title').textContent=screens[id].title;
+ document.getElementById('demo-note').textContent=screens[id].note;
+ document.getElementById('demo-back').disabled=!trail.length;
+ document.getElementById('demo-locate').href='#'+id;
+ document.getElementById('notification-demo-controls').hidden=id!=='C01';
+ document.getElementById('home-demo-controls').hidden=id!=='B01';
+ if(id==='C01'){
+   stage.querySelectorAll('[data-notification-project]').forEach(el=>{if(deletedProjects.has(el.dataset.notificationProject)||notificationState[el.dataset.notificationProject].status!=='待处理')el.remove();});
+   if(!stage.querySelector('[data-notification-project]')){const empty=document.createElement('p');empty.className='notification-empty';empty.textContent='暂无待处理通知';stage.querySelector('.screen-view').append(empty);}
+ }
+ if(id==='B01' && homeMode==='daily' && !deletedProjects.has('心理压力') && notificationState['心理压力'].status!=='待处理'){
+   const state=notificationState['心理压力'],due=stage.querySelector('.due');
+   due.querySelector('.badge').textContent=state.status;
+   due.querySelector('p').textContent=state.optionId?'最近填写：'+optionLabel('心理压力',state.optionId):'当前没有待处理提醒。';
+   due.querySelector('[data-go="C02"]').remove();
+ }
+ if(['B02','D01','D06'].includes(id) && currentProject==='心情'){
+   const walker=document.createTreeWalker(stage,NodeFilter.SHOW_TEXT);
+   while(walker.nextNode()) walker.currentNode.textContent=walker.currentNode.textContent.replaceAll('心理压力','心情').replaceAll('此刻，你感到多大压力？','此刻，你的心情怎么样？');
+ }
+ if(id==='B02')initRecordFeed(stage,currentProject,notificationState[currentProject]);
+ syncReminderSwitches(stage);
+ if(id==='D01'){
+   if(currentProject==='心情'){
+     stage.querySelector('[aria-label="项目名称"]').value='心情';
+     stage.querySelector('[aria-label="采样问题"]').value='此刻，你的心情怎么样？';
+   }
+   const optionEditor=stage.querySelector('.option-editor');optionEditor.replaceChildren();activeProjectOptions(currentProject).forEach((option,i)=>optionEditor.append(optionRow(option,i)));
+   stage.querySelector('.app-head button').dataset.go=formReturn;
+   const save=stage.querySelector('[data-save-project]');
+   stage.querySelector('[data-edit-only]').hidden=!editing;
+   if(editing){stage.querySelector('.app-head b').textContent='编辑项目';save.textContent='保存修改';save.dataset.go='B02';}
+   if(formDraft){
+     Object.entries(formDraft.fields).forEach(([label,value])=>stage.querySelector(`[aria-label="${label}"]`).value=value);
+     const editor=stage.querySelector('.option-editor');editor.replaceChildren();
+     formDraft.options.forEach((option,i)=>editor.append(optionRow(option,i)));
+     stage.querySelectorAll('.seg button').forEach((b,i)=>b.classList.toggle('selected',i===formDraft.optionType));
+   }
+   initTimeline(stage.querySelector('[data-timeline]'),formDraft?.times||previewSchedules[currentProject]);
+   const body=stage.querySelector('.project-form');
+   body.scrollTop=formDraft?formDraft.scrollTop:formSection?body.querySelector(`[data-form-block="${formSection}"]`).offsetTop:0;
+ }
+ if(id==='E01'||id==='E07')initStatistics(stage,currentProject,id==='E07');
+ if(id==='E04')initDateFilter(stage,currentProject);
+ if(id==='C02'){
+  stage.querySelector('[data-current-project]').textContent=currentProject;
+  stage.querySelector('[data-current-question]').textContent=currentProject==='心情'?'此刻，你的心情怎么样？':'此刻，你感到多大压力？';
+  const options=activeProjectOptions(currentProject);
+  const list=stage.querySelector('[data-options]'); list.replaceChildren();
+  options.forEach(option=>{const b=document.createElement('button');b.className='btn answer';b.dataset.answerId=option.id;const label=document.createElement('span');label.textContent=option.label;const circle=document.createElement('span');circle.className='radio';b.append(label,circle);list.append(b)});
+ }
+}
+function openScreen(id, source){
+ if(!modal.open){entry=source||document.activeElement;trail=[];current='';modal.showModal();document.body.style.overflow='hidden';}
+ renderScreen(id); modal.querySelector('.close-modal').focus({preventScroll:true});
+}
+function closeModal(){modal.close();document.body.style.overflow='';entry?.focus({preventScroll:true});}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button,a');if(!t)return;
+ if(t.matches('[data-close]')){closeModal();return}
+ if(t.matches('#demo-back')){if(trail.length)renderScreen(trail.pop(),false);return}
+ if(t.matches('#demo-restart')){trail=[];current='';currentProject='心理压力';answerReturn=null;notificationState['心理压力']={status:'待处理'};notificationState['心情']={status:'待处理'};demoHistory.length=0;demoResult('演示已重置。点击通知进入回答，或直接跳过。');renderScreen('C01',false);return}
+ if(t.matches('#demo-locate')){closeModal();return}
+ if(t.hasAttribute('data-reminder-toggle')){
+   const project=t.dataset.reminderToggle;reminderStates[project]=reminderStates[project]===false;
+   syncReminderSwitches();demoResult(project+'：后续提醒已'+(reminderStates[project]?'开启。':'暂停，历史记录保留。'));return;
+ }
+ if(t.dataset.homeMode){homeMode=t.dataset.homeMode;renderScreen('B01',false);return;}
+ if(t.dataset.project)currentProject=t.dataset.project;
+ if(t.dataset.answerId){if(!modal.open){currentProject='心理压力';answerReturn=null;}finishAnswer(t.dataset.answerId);return;}
+ if(t.hasAttribute('data-answer-back')){returnFromAnswer();return;}
+ if(t.dataset.skip){skipNotification(t.dataset.skip);return;}
+ if(t.hasAttribute('data-simulate-swipe')){skipNotification('心理压力');return;}
+ if(t.hasAttribute('data-simulate-next')){
+   if(deletedProjects.has('心理压力')){demoResult('此项目已删除，不再产生提醒。');return;}
+   if(reminderStates['心理压力']===false){demoResult('心理压力提醒已暂停，本次演示不产生新的提醒。');return;}
+   const wasPending=notificationState['心理压力'].status==='待处理';
+   if(wasPending)demoHistory.push({project:'心理压力',status:'未处理'});
+   notificationState['心理压力']={status:'待处理'};
+   demoResult(wasPending?'刚才的演示：旧压力提醒已标为未处理，新提醒替换它；该项目仍只有一条通知。':'刚才的演示：新的压力提醒已到达；上一条已结束的记录保持原样。');
+   renderScreen('C01',false);return;
+ }
+ if(t.dataset.toast)announce(t.dataset.toast);
+ if(t.hasAttribute('data-delete-project')){
+   deletedProjects.add(currentProject);demoResult('演示：已删除'+currentProject+'。真实数据没有被修改。');
+   const remaining=(homeMode==='daily'?['心理压力','心情']:['心情']).filter(project=>!deletedProjects.has(project));
+   trail=[];current='';renderScreen(remaining.length?'B01':'B03',false);return;
+ }
+ if(t.hasAttribute('data-apply-filter')){
+   if(applyDateFilter(t.closest('.phone'),currentProject))openScreen('E01',t);return;
+ }
+ if(t.dataset.go){
+   const source=t.closest('[data-screen]')?.dataset.screen;
+   if(source==='D01')captureProjectDraft(t.closest('.phone'));
+   if(source==='D01' && t.dataset.go==='B02' && formDraft){
+     if(formDraft.options.some(option=>!option.label)){const error=t.closest('.phone').querySelector('[data-option-feedback]');error.hidden=false;error.textContent='请为每个选项填写名称。';return;}
+     previewSchedules[currentProject]=[...formDraft.times];if(editing)commitProjectOptions(currentProject,formDraft.options);
+   }
+   if(!modal.open && !t.dataset.project && !t.dataset.answerId){currentProject='心理压力';editing=false;}
+   if(t.dataset.go==='B01'&&!source)homeMode='first';
+   if(t.dataset.go==='D01' && source!=='D06'){
+     formDraft=null;formSection=t.dataset.formSection||'';formReturn=['B01','B02','B03'].includes(source)?source:'B01';
+     if(source==='B02'){editing=true;}
+     else{editing=false;currentProject='心理压力';}
+   }
+   if(source==='B01' && t.dataset.go==='C02')currentProject='心理压力';
+   if(source==='D01' && t.dataset.go==='B02'){homeMode='daily';if(!editing){reminderStates[currentProject]=true;deletedProjects.delete(currentProject);}}
+   if(t.dataset.go==='C02')answerReturn=source==='B01'||source==='B02'?source:null;
+   openScreen(t.dataset.go,t);return;
+ }
+ if(t.hasAttribute('data-select')){t.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b===t));return}
+ if(t.hasAttribute('data-remove')){const editor=t.closest('.option-editor');if(editor.children.length<=2){announce('演示暂保留至少两个选项；实际限制待确认。');return}t.parentElement.remove();renumber(editor);return}
+ if(t.hasAttribute('data-add')){
+  const editor=t.parentElement.querySelector('.option-editor');if(!editor)return;
+  const row=optionRow({id:newOptionId(),label:''},editor.children.length);row.querySelector('input').placeholder='新的选项';editor.append(row);row.querySelector('input').focus();return;
+ }
+});
+function optionRow(option,index){
+ const row=document.createElement('div'),n=document.createElement('span'),input=document.createElement('input'),remove=document.createElement('button');
+ row.dataset.optionId=option.id;n.textContent=index+1;input.value=option.label;input.setAttribute('aria-label','选项 '+(index+1));remove.textContent='×';remove.setAttribute('data-remove','');remove.setAttribute('aria-label','删除选项 '+option.label);row.append(n,input,remove);return row;
+}
+function captureProjectDraft(phone){
+ const fields={};['项目名称','采样问题'].forEach(label=>fields[label]=phone.querySelector(`[aria-label="${label}"]`).value);
+ formDraft={fields,options:[...phone.querySelectorAll('.option-editor>div')].map(row=>({id:row.dataset.optionId,label:row.querySelector('input').value.trim()})),optionType:[...phone.querySelectorAll('.seg button')].findIndex(b=>b.classList.contains('selected')),times:timelineData(phone.querySelector('[data-timeline]')),scrollTop:phone.querySelector('.project-form').scrollTop};
+}
+function renumber(editor){[...editor.children].forEach((row,i)=>{row.firstElementChild.textContent=i+1;row.querySelector('input').setAttribute('aria-label','选项 '+(i+1));});}
+document.addEventListener('input',event=>{const row=event.target.closest('.option-editor>div');if(row)row.querySelector('[data-remove]').setAttribute('aria-label','删除选项 '+event.target.value);});
+modal.addEventListener('cancel',e=>{e.preventDefault();closeModal()});
+modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal()}});
+document.getElementById('expand-notes').addEventListener('click',e=>{const notes=[...document.querySelectorAll('.screen-note')];const open=!notes.every(n=>n.open);notes.forEach(n=>n.open=open);e.currentTarget.textContent=open?'收起设计说明':'展开设计说明'});
+syncReminderSwitches();
+
+const timelineStates=new WeakMap();
+let pointSequence=0;
+function minuteValue(time){const [h,m]=time.split(':').map(Number);return h*60+m;}
+function clockLabel(minutes){return String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');}
+function timelineData(editor){return (timelineStates.get(editor)?.points||[]).map(p=>clockLabel(p.minute));}
+function timelineMessage(editor,message=''){editor.querySelector('[data-timeline-feedback]').textContent=message;}
+function initTimeline(editor,times){
+ const points=(times||JSON.parse(editor.dataset.initialTimes)).map(time=>({id:String(++pointSequence),minute:minuteValue(time)}));
+ timelineStates.set(editor,{points,active:points[0]?.id,drag:null});renderTimeline(editor);
+}
+function updateTimelineSave(editor){
+ const phone=editor.closest('.phone');if(!phone)return;
+ const save=phone.querySelector('[data-save-project]');if(save)save.disabled=!timelineStates.get(editor).points.length;
+}
+function paintTimeline(editor){
+ const state=timelineStates.get(editor);const active=state.points.find(p=>p.id===state.active);
+ editor.querySelector('[data-point-count]').textContent='每天 '+state.points.length+' 次';
+ for(const point of state.points){
+  const dot=editor.querySelector(`[data-time-dot="${point.id}"]`);if(!dot)continue;
+  dot.style.left=(point.minute/1440*100)+'%';dot.classList.toggle('selected',point.id===state.active);
+  dot.setAttribute('aria-label',clockLabel(point.minute)+' 的提醒，可拖动或按方向键调整');
+  dot.setAttribute('aria-valuenow',point.minute);dot.setAttribute('aria-valuetext',clockLabel(point.minute));
+  const row=editor.querySelector(`[data-time-row="${point.id}"]`);
+  row.classList.toggle('active',point.id===state.active);const input=row.querySelector('input');if(document.activeElement!==input)input.value=clockLabel(point.minute);
+  row.querySelector('button').setAttribute('aria-label','删除 '+clockLabel(point.minute)+' 的提醒');
+ }
+ const output=editor.querySelector('[data-active-time]');output.hidden=!active;
+ if(active){output.textContent=clockLabel(active.minute);output.style.left=Math.max(12,Math.min(88,active.minute/1440*100))+'%';}
+ updateTimelineSave(editor);
+}
+function renderTimeline(editor){
+ const state=timelineStates.get(editor);state.points.sort((a,b)=>a.minute-b.minute);
+ const list=editor.querySelector('[data-time-list]'),dots=editor.querySelector('[data-axis-dots]');
+ const ids=new Set(state.points.map(p=>p.id));
+ [...list.children].forEach(row=>{if(!ids.has(row.dataset.timeRow))row.remove();});
+ [...dots.children].forEach(dot=>{if(!ids.has(dot.dataset.timeDot))dot.remove();});
+ state.points.forEach((point,index)=>{
+  let dot=dots.querySelector(`[data-time-dot="${point.id}"]`);
+  if(!dot){dot=document.createElement('button');dot.type='button';dot.className='time-axis-dot';dot.dataset.timeDot=point.id;dot.setAttribute('role','slider');dot.setAttribute('aria-valuemin','0');dot.setAttribute('aria-valuemax','1439');dot.setAttribute('aria-orientation','horizontal');dots.append(dot);}
+  let row=list.querySelector(`[data-time-row="${point.id}"]`);
+  if(!row){
+   row=document.createElement('div');row.className='time-point-row';row.dataset.timeRow=point.id;
+   const n=document.createElement('span');n.className='point-number';
+   const input=document.createElement('input');input.type='time';input.value=clockLabel(point.minute);input.dataset.timeInput=point.id;
+   const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.dataset.removeTime=point.id;
+   row.append(n,input,remove);list.append(row);
+  }
+  row.querySelector('.point-number').textContent=index+1;row.querySelector('input').setAttribute('aria-label','提醒时间 '+(index+1));
+  if(list.children[index]!==row){const focused=document.activeElement;list.insertBefore(row,list.children[index]||null);if(row.contains(focused))focused.focus({preventScroll:true});}
+ });
+ paintTimeline(editor);
+}
+function acceptTime(editor,id,minute){
+ const state=timelineStates.get(editor),point=state.points.find(p=>p.id===id);if(!point)return false;
+ if(!Number.isInteger(minute)||minute<0||minute>1439){editor.querySelector(`[data-time-input="${id}"]`).value=clockLabel(point.minute);timelineMessage(editor,'请选择一天内的有效时间。');paintTimeline(editor);return false;}
+ if(state.points.some(p=>p.id!==id&&p.minute===minute)){editor.querySelector(`[data-time-input="${id}"]`).value=clockLabel(point.minute);timelineMessage(editor,'这个时间已有提醒，请选择其他时间。');paintTimeline(editor);return false;}
+ point.minute=minute;state.active=id;timelineMessage(editor);renderTimeline(editor);return true;
+}
+document.addEventListener('click',event=>{
+ const target=event.target.closest('button');if(!target)return;
+ const editor=target.closest('[data-timeline]');if(!editor)return;
+ const state=timelineStates.get(editor);if(!state)return;
+ if(target.hasAttribute('data-add-time')){
+  const used=new Set(state.points.map(p=>p.minute));const last=state.points.at(-1)?.minute??540;let next=null;
+  for(let i=0;i<1440;i++){const candidate=(last+60+i)%1440;if(!used.has(candidate)){next=candidate;break;}}
+  if(next===null)return;
+  const point={id:String(++pointSequence),minute:next};state.points.push(point);state.active=point.id;timelineMessage(editor);renderTimeline(editor);
+  editor.querySelector(`[data-time-input="${point.id}"]`).focus({preventScroll:true});
+ }else if(target.dataset.removeTime){
+  state.points=state.points.filter(p=>p.id!==target.dataset.removeTime);state.active=state.points[0]?.id;renderTimeline(editor);
+  timelineMessage(editor,state.points.length?'':'请至少添加一个提醒时间。');
+ }else if(target.dataset.timeDot){
+  state.active=target.dataset.timeDot;paintTimeline(editor);
+ }
+});
+document.addEventListener('change',event=>{
+ const input=event.target.closest('[data-time-input]');if(input){acceptTime(input.closest('[data-timeline]'),input.dataset.timeInput,minuteValue(input.value));return;}
+});
+document.addEventListener('focusin',event=>{
+ const input=event.target.closest('[data-time-input]');if(!input)return;
+ const editor=input.closest('[data-timeline]'),state=timelineStates.get(editor);state.active=input.dataset.timeInput;paintTimeline(editor);
+});
+document.addEventListener('keydown',event=>{
+ const dot=event.target.closest('[data-time-dot]');if(!dot)return;
+ const change={ArrowLeft:-15,ArrowRight:15,ArrowDown:-60,ArrowUp:60};if(!(event.key in change)&&event.key!=='Home'&&event.key!=='End')return;
+ event.preventDefault();const editor=dot.closest('[data-timeline]'),state=timelineStates.get(editor),point=state.points.find(p=>p.id===dot.dataset.timeDot);
+ const next=event.key==='Home'?0:event.key==='End'?1439:Math.max(0,Math.min(1439,point.minute+change[event.key]));
+ if(acceptTime(editor,point.id,next))editor.querySelector(`[data-time-dot="${point.id}"]`).focus({preventScroll:true});
+});
+document.addEventListener('pointerdown',event=>{
+ const dot=event.target.closest('[data-time-dot]');if(!dot||event.button!==0)return;
+ const editor=dot.closest('[data-timeline]'),state=timelineStates.get(editor),point=state.points.find(p=>p.id===dot.dataset.timeDot);
+ state.active=point.id;state.drag={id:point.id,original:point.minute,startX:event.clientX,moved:false};dot.setPointerCapture(event.pointerId);paintTimeline(editor);
+});
+document.addEventListener('pointermove',event=>{
+ const dot=event.target.closest('[data-time-dot]');if(!dot)return;
+ const editor=dot.closest('[data-timeline]'),state=timelineStates.get(editor);if(!state.drag)return;
+ if(Math.abs(event.clientX-state.drag.startX)<4&&!state.drag.moved)return;
+ state.drag.moved=true;const bounds=editor.querySelector('[data-axis-track]').getBoundingClientRect();
+ const minute=Math.max(0,Math.min(1425,Math.round((event.clientX-bounds.left)/bounds.width*1440/15)*15));
+ state.points.find(p=>p.id===state.drag.id).minute=minute;paintTimeline(editor);
+});
+function endTimeDrag(event,cancel=false){
+ const dot=event.target.closest('[data-time-dot]');if(!dot)return;
+ const editor=dot.closest('[data-timeline]'),state=timelineStates.get(editor);if(!state.drag)return;
+ const drag=state.drag,point=state.points.find(p=>p.id===drag.id),next=point.minute;state.drag=null;point.minute=drag.original;
+ if(cancel||!drag.moved){paintTimeline(editor);return;}
+ acceptTime(editor,point.id,next);
+}
+document.addEventListener('pointerup',event=>endTimeDrag(event));
+document.addEventListener('pointercancel',event=>endTimeDrag(event,true));
+document.querySelectorAll('main [data-timeline]').forEach(editor=>initTimeline(editor));
+
+const sampleRecords=[{"date": "2026-09-11", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-1"}, {"date": "2026-09-11", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-11", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-11", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-11", "planned": "20:00", "status": "skipped"}, {"date": "2026-09-12", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-12", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-12", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-12", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-4"}, {"date": "2026-09-12", "planned": "20:00", "status": "unprocessed"}, {"date": "2026-09-13", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-13", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-13", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-4"}, {"date": "2026-09-13", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-5"}, {"date": "2026-09-13", "planned": "20:00", "status": "skipped"}, {"date": "2026-09-14", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-1"}, {"date": "2026-09-14", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-14", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-14", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-4"}, {"date": "2026-09-14", "planned": "20:00", "status": "unprocessed"}, {"date": "2026-09-15", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-15", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-15", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-4"}, {"date": "2026-09-15", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-5"}, {"date": "2026-09-15", "planned": "20:00", "status": "skipped"}, {"date": "2026-09-16", "planned": "10:00", "answered": "10:03", "status": "answered", "optionId": "option-1"}, {"date": "2026-09-16", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-16", "planned": "15:00", "answered": "15:03", "status": "answered", "optionId": "option-3"}, {"date": "2026-09-16", "planned": "17:00", "answered": "17:03", "status": "answered", "optionId": "option-4"}, {"date": "2026-09-16", "planned": "20:00", "status": "unprocessed"}, {"date": "2026-09-17", "planned": "10:00", "status": "unprocessed"}, {"date": "2026-09-17", "planned": "12:00", "answered": "12:03", "status": "answered", "optionId": "option-2"}, {"date": "2026-09-17", "planned": "15:00", "status": "pending"}];
+const optionCatalog={
+ '心理压力':['无','轻微','中等','较高','很高'].map((label,i)=>({id:'pressure-option-'+(i+1),label,active:true})),
+ '心情':['很不好','不太好','一般','不错','很好'].map((label,i)=>({id:'mood-option-'+(i+1),label,active:true}))
+};
+const projectRecordStore=Object.fromEntries(Object.entries({'心理压力':'pressure-','心情':'mood-'}).map(([project,prefix])=>[project,sampleRecords.map(record=>({...record,...(record.optionId?{optionId:prefix+record.optionId}:{})}))]));
+let optionSequence=0;
+function newOptionId(){return 'new-option-'+(++optionSequence);}
+function projectOptions(project){return optionCatalog[project]||[];}
+function activeProjectOptions(project){return projectOptions(project).filter(option=>option.active);}
+function optionLabel(project,id){return projectOptions(project).find(option=>option.id===id)?.label||'未知选项';}
+function commitProjectOptions(project,options){
+ const catalog=optionCatalog[project]||(optionCatalog[project]=[]),ids=new Set(options.map(option=>option.id));
+ catalog.forEach(option=>{option.active=ids.has(option.id);});
+ options.forEach(option=>{const existing=catalog.find(item=>item.id===option.id);if(existing){existing.label=option.label;existing.active=true;}else catalog.push({id:option.id,label:option.label,active:true});});
+}
+const dateRanges={};
+const feedPositions={};
+const feedInstances=new WeakMap();
+const fixtureToday='2026-09-17';
+const safeText=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function projectLabels(project){return projectOptions(project).map(option=>option.label);}
+function rangeFor(project){return dateRanges[project]||{start:'2026-09-11',end:fixtureToday,days:7};}
+function shortDate(date){return date.slice(5).replace('-','.');}
+function rangeLabel(range){return (range.days?'最近 '+range.days+' 天':'自定义日期')+' · '+shortDate(range.start)+'–'+shortDate(range.end);}
+function recordMarkup(record,project){
+ const status={answered:'已回答',skipped:'已跳过',unprocessed:'未处理',pending:'待处理'}[record.status];
+ const answer=record.status==='answered'?optionLabel(project,record.optionId):status;
+ const detail=record.status==='answered'?record.answered+' 填写':record.status==='unprocessed'?'已被后续提醒替换':record.status==='skipped'?'用户主动跳过':'点击记录当下';
+ const tag=record.status==='pending'?'button':'div';
+ return `<${tag} class="sample-row ${record.status}" data-option-id="${safeText(record.optionId||'')}" data-record-time="${record.date} ${record.answered||record.planned}" ${record.status==='pending'?'data-go="C02"':''}><span class="sample-time">${safeText(record.planned)}</span><span class="sample-answer"><strong>${safeText(answer)}</strong><small>${safeText(detail)}</small></span><span class="sample-tag">${record.status==='pending'?'回答 ›':status}</span></${tag}>`;
+}
+function recordsForProject(project,outcome){
+ const records=(projectRecordStore[project]||[]).map(record=>({...record}));
+ const current=records.find(record=>record.status==='pending');
+ if(current&&outcome?.status==='已回答'){
+  current.status='answered';current.optionId=outcome.optionId;current.answered=new Date(outcome.answeredAt).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});
+ }else if(current&&outcome?.status==='已跳过')current.status='skipped';
+ return records;
+}
+function initRecordFeed(root,project,outcome){
+ const scroller=root.querySelector('.record-feed');if(!scroller)return;
+ const records=recordsForProject(project,outcome);
+ const dates=[...new Set(records.map(r=>r.date))].sort().reverse();
+ const saved=feedPositions[project]||{loaded:2,scrollTop:0};
+ const state={project,records,dates,loaded:Math.min(saved.loaded,dates.length),loading:false};feedInstances.set(scroller,state);
+ renderFeed(scroller);scroller.scrollTop=saved.scrollTop;
+ scroller.addEventListener('scroll',()=>{
+  feedPositions[project]={loaded:state.loaded,scrollTop:scroller.scrollTop};
+  if(state.loading||state.loaded>=dates.length)return;
+  if(scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-65){
+   state.loading=true;scroller.querySelector('[data-history-sentinel]').textContent='正在加载历史记录…';
+   setTimeout(()=>{if(!scroller.isConnected)return;const top=scroller.scrollTop;state.loaded=Math.min(state.loaded+2,dates.length);state.loading=false;renderFeed(scroller);scroller.scrollTop=top;feedPositions[project]={loaded:state.loaded,scrollTop:top};},180);
+  }
+ });
+}
+function renderFeed(scroller){
+ const state=feedInstances.get(scroller),container=scroller.querySelector('[data-record-feed-content]');
+ container.innerHTML=state.dates.slice(0,state.loaded).map(date=>{
+  const records=state.records.filter(r=>r.date===date).sort((a,b)=>b.planned.localeCompare(a.planned));
+  const title=date===fixtureToday?'今天 · 9 月 17 日':date==='2026-09-16'?'昨天 · 9 月 16 日':Number(date.slice(5,7))+' 月 '+Number(date.slice(8))+' 日';
+  return `<section class="record-day" data-record-date="${date}"><div class="record-day-heading"><h3>${title}</h3><small>${records.length} 次采样</small></div>${records.map(r=>recordMarkup(r,state.project)).join('')}</section>`;
+ }).join('');
+ scroller.querySelector('[data-history-sentinel]').textContent=state.loaded>=state.dates.length?'没有更早的记录了':'向下滑动，继续加载历史记录';
+}
+function chartLegend(options){return '<div class="legend">'+options.map((option,i)=>`<span data-option-id="${safeText(option.id)}"><i style="background:var(--g${i%5})"></i>${safeText(option.label)}</span>`).join('')+'</div>';}
+function countOptions(records,options){
+ const indexById=new Map(options.map((option,index)=>[option.id,index])),counts=Array(options.length).fill(0);
+ records.forEach(record=>{const index=indexById.get(record.optionId);if(index!==undefined)counts[index]++;});return counts;
+}
+function dayChart(records,options){
+ const dates=[...new Set(records.map(record=>record.date))].sort();
+ return '<div class="chart-stack" role="img" aria-label="按填写日期统计各选项占比">'+dates.map(date=>{
+  const counts=countOptions(records.filter(record=>record.date===date),options),total=counts.reduce((a,b)=>a+b,0);
+  return `<div class="column"><small>${total}</small><div class="stack">${counts.map((n,i)=>n?`<i data-option-id="${safeText(options[i].id)}" title="${safeText(options[i].label)} ${n} 次" style="height:${n/total*100}%;background:var(--g${i%5})"></i>`:'').join('')}</div><span>${Number(date.slice(8))}</span></div>`;
+ }).join('')+'</div>'+chartLegend(options);
+}
+function hourChart(records,options){
+ const ranges=[[0,8,'00–08'],[8,12,'08–12'],[12,16,'12–16'],[16,20,'16–20'],[20,24,'20–24']];
+ return '<div class="hour-chart">'+ranges.map(([start,end,label])=>{
+  const matching=records.filter(record=>{const hour=Number(record.answered.slice(0,2));return hour>=start&&hour<end;}),counts=countOptions(matching,options),total=matching.length;
+  return `<div class="hour-row"><span>${label}</span><div>${counts.map((n,i)=>n?`<i data-option-id="${safeText(options[i].id)}" style="width:${n/total*100}%;background:var(--g${i%5})"></i>`:'').join('')}</div><b>${total} 次</b></div>`;
+ }).join('')+'</div>'+chartLegend(options);
+}
+function optionChart(records,options){
+ const counts=countOptions(records,options),total=records.length;
+ return '<div data-option-summary>'+options.map((option,i)=>{
+  const percent=total?Math.round(counts[i]/total*100):0;
+  return `<div class="option-stat" data-option-id="${safeText(option.id)}" data-option-count="${counts[i]}"><span>${safeText(option.label)}</span><div class="option-bar"><i style="width:${total?counts[i]/total*100:0}%"></i></div><span class="option-value">${counts[i]} 次 · ${percent}%</span></div>`;
+ }).join('')+'</div>';
+}
+function initStatistics(root,project,forceEmpty=false){
+ const target=root.querySelector('[data-stats-content]');if(!target)return;
+ const range=rangeFor(project),options=projectOptions(project);
+ const matching=forceEmpty?[]:recordsForProject(project,notificationState[project]).filter(r=>r.date>=range.start&&r.date<=range.end&&r.status!=='pending');
+ const answers=matching.filter(r=>r.status==='answered'),skipped=matching.filter(r=>r.status==='skipped').length,unprocessed=matching.filter(r=>r.status==='unprocessed').length;
+ const empty='<div class="stat-empty">这个日期范围内还没有回答记录</div>';
+ target.innerHTML=`<p class="stats-context">${safeText(project)}</p><p class="stats-range">${safeText(rangeLabel(range))}</p><div class="metrics"><div><b>${answers.length}<small>次</small></b><span>已回答</span></div><div><b>${skipped}<small>次</small></b><span>已跳过</span></div><div><b>${unprocessed}<small>次</small></b><span>未处理</span></div></div>`
+  +`<section class="stat-section" data-stat-kind="date"><h3>日期趋势</h3><p class="fine">按填写日期展示选项占比，柱上为回答次数。</p>${answers.length?dayChart(answers,options):empty}</section>`
+  +`<section class="stat-section" data-stat-kind="hour"><h3>时段分布</h3><p class="fine">按实际填写时间分组。</p>${answers.length?hourChart(answers,options):empty}</section>`
+  +`<section class="stat-section" data-stat-kind="option"><h3>按选项统计</h3><p class="fine">回答次数与占比，跳过和未处理不计入答案。</p>${answers.length?optionChart(answers,options):empty}</section>`;
+}
+function initDateFilter(root,project){
+ const range=rangeFor(project);root.querySelector('[aria-label="开始日期"]').value=range.start;root.querySelector('[aria-label="结束日期"]').value=range.end;
+ root.querySelectorAll('[data-range-buttons] button').forEach(b=>b.classList.toggle('selected',range.days?Number(b.dataset.rangeDays)===range.days:b.hasAttribute('data-range-custom')));
+}
+function applyDateFilter(phone,project){
+ const start=phone.querySelector('[aria-label="开始日期"]').value,end=phone.querySelector('[aria-label="结束日期"]').value;
+ if(!start||!end||start>end){phone.querySelector('[data-date-feedback]').textContent='请选择有效日期，开始日期不能晚于结束日期。';return false;}
+ const selected=phone.querySelector('[data-range-buttons] .selected');dateRanges[project]={start,end,days:selected?.dataset.rangeDays?Number(selected.dataset.rangeDays):null};return true;
+}
+document.addEventListener('click',event=>{
+ const button=event.target.closest('[data-range-days],[data-range-custom]');if(!button)return;
+ const phone=button.closest('.phone');phone.querySelectorAll('[data-range-buttons] button').forEach(b=>b.classList.toggle('selected',b===button));
+ if(button.dataset.rangeDays){const start=new Date(fixtureToday+'T00:00:00Z');start.setUTCDate(start.getUTCDate()-Number(button.dataset.rangeDays)+1);phone.querySelector('[aria-label="开始日期"]').value=start.toISOString().slice(0,10);phone.querySelector('[aria-label="结束日期"]').value=fixtureToday;}
+});
+document.addEventListener('change',event=>{
+ if(!event.target.matches('[aria-label="开始日期"],[aria-label="结束日期"]'))return;
+ const phone=event.target.closest('.phone');if(!phone.querySelector('[data-range-buttons]'))return;phone.querySelectorAll('[data-range-buttons] button').forEach(b=>b.classList.toggle('selected',b.hasAttribute('data-range-custom')));
+});
+document.querySelectorAll('main [data-screen="B02"]').forEach(root=>initRecordFeed(root,'心理压力',notificationState['心理压力']));
+document.querySelectorAll('main [data-stats-content]').forEach(target=>initStatistics(target.closest('.phone'),'心理压力',target.dataset.empty==='true'));
+</script></body></html>

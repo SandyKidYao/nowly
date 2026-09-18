@@ -1,0 +1,92 @@
+{
+  "name": "Nowly / Moss & Quiet",
+  "version": "1.0",
+  "status": "selected",
+  "selectedAt": "2026-09-18",
+  "appearance": "light",
+  "direction": "A · 苔灰",
+  "basis": "2026-09-17-wireframes-nowly.html",
+  "color": {
+    "background": "#F3F4EF",
+    "surface": "#FCFCF9",
+    "textPrimary": "#29362F",
+    "textSecondary": "#58665D",
+    "primary": "#526B5B",
+    "onPrimary": "#FFFFFF",
+    "containerTint": "#E5EAE1",
+    "outline": "#D9E0D5",
+    "accentSand": "#C6B7A1",
+    "chartPalette": [
+      "#DCE3D8",
+      "#BCCAB8",
+      "#99AD95",
+      "#728D70",
+      "#496548"
+    ]
+  },
+  "typography": {
+    "family": "system-sans-serif",
+    "chinesePreview": "PingFang SC / system fallback",
+    "homeTitle": {
+      "size": 29,
+      "weight": 600
+    },
+    "pageTitle": {
+      "size": 15,
+      "weight": 550
+    },
+    "question": {
+      "size": 27,
+      "weight": 550,
+      "lineHeight": 1.55
+    },
+    "projectTitle": {
+      "size": 17,
+      "weight": 550
+    },
+    "body": {
+      "size": 14,
+      "weight": 400
+    },
+    "answer": {
+      "size": 15,
+      "weight": 400
+    },
+    "control": {
+      "size": 13,
+      "weight": 400
+    },
+    "caption": {
+      "size": 11,
+      "weight": 400
+    },
+    "metric": {
+      "size": 28,
+      "weight": 550
+    }
+  },
+  "radius": {
+    "projectCard": 17,
+    "control": 12,
+    "answer": 14,
+    "bottomSheet": 24,
+    "chip": 7,
+    "badge": 5
+  },
+  "layout": {
+    "pageInsetHorizontal": 19,
+    "pageInsetVertical": 16,
+    "cardPadding": 15,
+    "primaryActionMinHeight": 48,
+    "answerMinHeight": 52
+  },
+  "assets": {
+    "mark": "../assets/brand/nowly-mark.svg",
+    "appIconPreview": "../assets/brand/nowly-app-icon.svg"
+  },
+  "notes": [
+    "Values reproduce the approved HTML direction; map logical sizes and font weights to the chosen native UI stack.",
+    "The app icon SVG is the selected visual composition, not a generated Android adaptive-icon resource set.",
+    "Light appearance is selected; dark appearance and platform packaging are not included in this baseline."
+  ]
+}

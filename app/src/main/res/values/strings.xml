@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">此刻</string>
+    <string name="brand_name">NOWLY</string>
+    <string name="home_empty_title">从一个小问题开始</string>
+    <string name="home_empty_description">创建一个记录项目，设置问题、选项和提醒。</string>
+    <string name="home_loading">正在读取记录项目</string>
+    <string name="home_load_error">暂时无法读取记录，请重新打开应用。</string>
+</resources>
