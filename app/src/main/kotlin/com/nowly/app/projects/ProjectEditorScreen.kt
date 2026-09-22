@@ -48,10 +48,10 @@ import kotlinx.coroutines.launch
 private class EditorState(val id: String, project: RecordProject?) {
     var name by mutableStateOf(project?.name.orEmpty())
     var question by mutableStateOf(project?.question.orEmpty())
-    var ordered by mutableStateOf(project?.ordered ?: false)
+    var remindersEnabled by mutableStateOf(project?.remindersEnabled ?: true)
     var options by mutableStateOf(project?.options?.filter { it.active } ?: List(2) { AnswerOption(UUID.randomUUID().toString(), "", it) })
     var times by mutableStateOf(project?.times ?: OfflineProjectRepository.defaultTimes)
-    fun draft() = ProjectDraft(id, name, question, ordered, options, times)
+    fun draft() = ProjectDraft(id, name, question, true, options, times, remindersEnabled)
     fun move(fromId: String, toId: String): Boolean {
         val from = options.indexOfFirst { it.id == fromId }
         val to = options.indexOfFirst { it.id == toId }
@@ -67,10 +67,12 @@ private class EditorState(val id: String, project: RecordProject?) {
     }
     companion object {
         val Saver = mapSaver(
-            save = { state -> mapOf("id" to state.id, "name" to state.name, "question" to state.question, "ordered" to state.ordered,
+            save = { state -> mapOf("id" to state.id, "name" to state.name, "question" to state.question,
+                "remindersEnabled" to state.remindersEnabled,
                 "ids" to ArrayList(state.options.map { it.id }), "labels" to ArrayList(state.options.map { it.label }), "times" to ArrayList(state.times)) },
             restore = { saved -> EditorState(saved["id"] as String, null).apply {
-                name = saved["name"] as String; question = saved["question"] as String; ordered = saved["ordered"] as Boolean
+                name = saved["name"] as String; question = saved["question"] as String
+                remindersEnabled = saved["remindersEnabled"] as? Boolean ?: true
                 val ids = saved["ids"] as List<*>; val labels = saved["labels"] as List<*>
                 options = ids.mapIndexed { index, id -> AnswerOption(id as String, labels[index] as String, index) }
                 times = (saved["times"] as List<*>).map { it as Int }
@@ -119,7 +121,7 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background, modifier = Modifier.imePadding()) { insets ->
         Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar(if (create) "创建记录项目" else "编辑项目", { if (editingEnabled) onBack() })
+            ScreenBar(if (create) "创建记录" else "编辑", { if (editingEnabled) onBack() })
             LazyColumn(
                 modifier = Modifier.weight(1f).testTag("editor-list"), state = scroll,
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -127,21 +129,11 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
             ) {
                 item(key = "project-fields") {
                     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                        Text("项目信息", style = MaterialTheme.typography.titleMedium)
-                        OutlinedTextField(shape = MaterialTheme.shapes.small, value = state.name, onValueChange = { state.name = it }, label = { Text("项目名称") }, modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = editingEnabled)
+                        Text("信息", style = MaterialTheme.typography.titleMedium)
+                        OutlinedTextField(shape = MaterialTheme.shapes.small, value = state.name, onValueChange = { state.name = it }, label = { Text("名称") }, modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = editingEnabled)
                         OutlinedTextField(shape = MaterialTheme.shapes.small, value = state.question, onValueChange = { state.question = it }, label = { Text("采样问题") }, modifier = Modifier.fillMaxWidth(), enabled = editingEnabled, minLines = 2)
-                        Text("一个项目只问一个问题。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         HorizontalDivider(Modifier.padding(vertical = 8.dp))
                         Text("回答选项", style = MaterialTheme.typography.titleMedium)
-                        Text("单选，点选即记录。改名后，历史和统计也显示新名称。", style = MaterialTheme.typography.bodySmall)
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            FilterChip(!state.ordered, { state.ordered = false }, label = { Text("普通分类") }, enabled = editingEnabled)
-                            FilterChip(state.ordered, { state.ordered = true }, label = { Text("有序等级") }, enabled = editingEnabled)
-                        }
-                        Text(
-                            if (state.ordered) "按从低到高排列。拖动左侧手柄调整顺序。" else "拖动左侧手柄调整选项顺序。",
-                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
                     }
                 }
                 itemsIndexed(state.options, key = { _, option -> option.id }) { index, option ->
@@ -199,12 +191,12 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         TextButton(shape = MaterialTheme.shapes.small, onClick = { state.options = state.options + AnswerOption(UUID.randomUUID().toString(), "", state.options.size) }, enabled = editingEnabled && state.options.size < 20) { Text("＋ 添加选项") }
                         HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                        Text("采样提醒", style = MaterialTheme.typography.titleMedium)
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("每天的提醒时间"); Text("每天 ${state.times.size} 次", color = MaterialTheme.colorScheme.primary)
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Text("采样提醒", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                            Switch(state.remindersEnabled, { state.remindersEnabled = it }, enabled = editingEnabled,
+                                modifier = Modifier.testTag("reminder-switch").semantics { contentDescription = "提醒开关" })
                         }
                         ReminderTimeline(state.times, enabled = editingEnabled, onChange = ::updateTime, onEnd = { state.times = state.times.sorted() })
-                        Text("拖动圆点按 15 分钟调整，点击下方时间精确设置。", style = MaterialTheme.typography.bodySmall)
                         state.times.forEachIndexed { index, minute ->
                             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                                 OutlinedButton(shape = MaterialTheme.shapes.small, onClick = {
@@ -227,8 +219,10 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                         }
                         if (!create) {
                             HorizontalDivider(Modifier.padding(top = 16.dp))
-                            TextButton(shape = MaterialTheme.shapes.small, onClick = { confirmDelete = true }, enabled = editingEnabled, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("删除项目") }
-                            Text("删除该项目及其记录，此操作无法撤销。", style = MaterialTheme.typography.bodySmall)
+                            Button(shape = MaterialTheme.shapes.small, onClick = { confirmDelete = true }, enabled = editingEnabled,
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError)) { Text("删除") }
                         }
                         Spacer(Modifier.height(16.dp))
                     }
@@ -249,21 +243,21 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                             finally { saving = false }
                         }
                         }
-                    }, enabled = editingEnabled, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(if (saving) "正在保存…" else "保存项目") }
+                    }, enabled = editingEnabled, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(if (saving) "正在保存…" else "保存") }
                 }
             }
         }
     }
     if (confirmDelete) AlertDialog(onDismissRequest = { if (!saving) confirmDelete = false },
         title = { Text("删除「${project?.name.orEmpty()}」？") },
-        text = { Text("这会移除该项目和它在本机的全部记录，并停止后续提醒。此操作无法撤销。") },
+        text = { Text("这会删除「${project?.name.orEmpty()}」及其全部记录，并停止后续提醒。此操作无法撤销。") },
         confirmButton = { TextButton(shape = MaterialTheme.shapes.small, onClick = { scope.launch {
             saving = true
             try { onDelete(); confirmDelete = false }
             catch (cancel: CancellationException) { throw cancel }
             catch (_: Exception) { error = "删除未完成，请重试"; confirmDelete = false }
             finally { saving = false }
-        } }, enabled = !saving) { Text("删除项目及记录", color = MaterialTheme.colorScheme.error) } },
+        } }, enabled = !saving) { Text("确认删除", color = MaterialTheme.colorScheme.error) } },
         dismissButton = { TextButton(shape = MaterialTheme.shapes.small, onClick = { confirmDelete = false }, enabled = !saving) { Text("取消") } })
 }
 

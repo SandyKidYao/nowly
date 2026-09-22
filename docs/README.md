@@ -19,7 +19,8 @@
 - [技术选型](nowly-technical-selection.md)
 - [工程说明与运行方式](../README.md)
 
-- [MVP 实现约定](mvp-implementation.md)
-- [MVP 验证记录](mvp-verification.md)
+- [MVP 实现约定](mvp-implementation.md)：需求未定边界的实现选择，随版本更新
+- [版本决策记录](changelog.md)：0.2.0 至今每个版本确认的产品与实现决策
+- [后台提醒真机排查](background-reminders.md)：vivo 真机后台限制的定位与设置
 
-- [选项拖动排序更新](option-reordering.md)
+过程材料（验证日志、截图、安装包校验值、方案比较页）不入库，位于 `.local/` 与 `tmp/`。

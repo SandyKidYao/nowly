@@ -20,6 +20,7 @@ interface ProjectDao {
     suspend fun bundles(): List<ProjectBundle>
     @Query("SELECT * FROM projects WHERE id = :id") suspend fun project(id: String): ProjectEntity?
     @Query("UPDATE projects SET remindersEnabled = :enabled WHERE id = :id") suspend fun setEnabled(id: String, enabled: Boolean)
+    @Query("UPDATE projects SET ordered = 1 WHERE ordered = 0") suspend fun useOrderedOptions()
     @Query("DELETE FROM projects WHERE id = :id") suspend fun deleteProject(id: String)
     @Upsert suspend fun upsertOptions(options: List<OptionEntity>)
     @Query("SELECT * FROM options WHERE projectId = :id") suspend fun options(id: String): List<OptionEntity>

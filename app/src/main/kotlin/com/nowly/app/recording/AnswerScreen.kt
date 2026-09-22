@@ -41,7 +41,7 @@ fun AnswerRoute(initialId: String, vm: MvpViewModel, onClose: () -> Unit) {
                 } else if (result?.isFailure == true || state == HomeUiState.ReadError) {
                     Text("暂时无法读取这次提醒，请返回后重试。")
                 } else if (sample == null || project == null) {
-                    Text("这个记录项目已不存在。")
+                    Text("这条记录已不存在。")
                     TextButton(onClick = onClose) { Text("返回") }
                 } else if (sample.status != SampleStatus.PENDING && !saving) {
                     Text("这次提醒已结束。", style = MaterialTheme.typography.headlineSmall)
@@ -74,7 +74,7 @@ fun AnswerRoute(initialId: String, vm: MvpViewModel, onClose: () -> Unit) {
                         }
                     }
                     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                    Text(if (saving) "正在保存…" else "记录你现在的状态。轻点即保存并返回。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (saving) Text("正在保存…", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

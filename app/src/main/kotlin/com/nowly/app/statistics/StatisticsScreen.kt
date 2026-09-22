@@ -2,26 +2,35 @@ package com.nowly.app.statistics
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.nowly.app.R
+import com.nowly.app.data.local.SampleEntity
 import com.nowly.app.projects.AnswerOption
 import com.nowly.app.projects.RecordProject
 import com.nowly.app.ui.MvpViewModel
 import com.nowly.app.ui.ScreenBar
 import com.nowly.app.ui.queryState
+import com.nowly.app.ui.timeLabel
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -40,11 +49,20 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
     val options = project?.options.orEmpty().filter { it.active || (stats.options[it.id] ?: 0) > 0 }
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { insets ->
         Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar("项目统计", onBack) { TextButton(shape = MaterialTheme.shapes.small, onClick = { filtering = true }) { Text("筛选") } }
-            LazyColumn(Modifier.fillMaxSize().testTag("statistics-list"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            ScreenBar("统计", onBack)
+            LazyColumn(Modifier.fillMaxSize().testTag("statistics-list"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
-                    Text(project?.name.orEmpty(), style = MaterialTheme.typography.titleLarge)
-                    Text("$start — $end", Modifier.padding(top = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(project?.name.orEmpty(), Modifier.weight(1f), style = MaterialTheme.typography.titleLarge,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Row(Modifier.heightIn(min = 48.dp).testTag("date-range")
+                            .clickable(role = Role.Button, onClickLabel = "选择日期范围") { filtering = true },
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text("$start — $end", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodySmall)
+                            Icon(painterResource(R.drawable.ic_chevron_forward), null, Modifier.size(16.dp).rotate(90f), tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
                 }
                 if (query == null) item { CircularProgressIndicator() }
                 else if (query?.isFailure == true) item { Text("暂时无法读取统计，请返回后重试。") }
@@ -110,6 +128,23 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
                             }
                         }
                     }
+                    item {
+                        Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("记录", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                            Text("${stats.answered} 条", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                    if (stats.answeredRecords.isEmpty()) item { EmptyChart() }
+                    itemsIndexed(stats.answeredRecords, key = { _, it -> it.id }) { index, record ->
+                        Column {
+                            if (index == 0 || stats.answeredRecords[index - 1].localDate != record.localDate) {
+                                Text(if (record.localDate == LocalDate.now().toString()) "今天 · ${record.localDate}" else record.localDate,
+                                    Modifier.padding(top = if (index == 0) 0.dp else 16.dp, bottom = 4.dp),
+                                    style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            RecordRow(record, project?.options?.firstOrNull { it.id == record.optionId })
+                        }
+                    }
                 }
             }
         }
@@ -120,6 +155,22 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
 @Composable
 private fun Metric(value: Int, label: String) {
     Column { Text(value.toString(), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary); Text(label, style = MaterialTheme.typography.labelMedium) }
+}
+
+@Composable
+private fun RecordRow(record: SampleEntity, option: AnswerOption?) {
+    val label = option?.label ?: "已停用选项"
+    val time = timeLabel(record.answeredAt ?: record.eventAt, record.answeredZoneId ?: record.zoneId)
+    Column(Modifier.fillMaxWidth().testTag("history-record-${record.id}")
+        .semantics(mergeDescendants = true) { contentDescription = "$time 填写：$label" }) {
+        Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text(time, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
+            option?.let { Box(Modifier.size(10.dp).background(optionColor(it), MaterialTheme.shapes.extraSmall)) }
+            Text(label, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+    }
 }
 
 @Composable

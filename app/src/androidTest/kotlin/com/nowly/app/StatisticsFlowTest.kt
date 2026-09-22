@@ -32,8 +32,8 @@ class StatisticsFlowTest {
     @get:Rule(order = 0) val permission: GrantPermissionRule = GrantPermissionRule.grant(*if (Build.VERSION.SDK_INT >= 33) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else emptyArray())
     @get:Rule(order = 1) val compose = createAndroidComposeRule<MainActivity>()
 
-    @Test fun populatedChartsCustomDateFilteringAndHistoryPaginationUseTheSameRecords() {
-        compose.waitUntil(10_000) { compose.onAllNodesWithText("心情 ›").fetchSemanticsNodes().isNotEmpty() }
+    @Test fun mergedPageSharesOneDateRangeBetweenStatisticsAndAnsweredRecords() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("心情").fetchSemanticsNodes().isNotEmpty() }
         val container = (compose.activity.application as NowlyApplication).container
         val today = LocalDate.now()
         val zone = ZoneId.systemDefault()
@@ -42,33 +42,49 @@ class StatisticsFlowTest {
         runBlocking {
             container.reminders.save(ProjectDraft(id, "统计样本", "此刻感到多大压力？", true, options, listOf(600)))
             container.reminders.enable(id, false)
-            repeat(32) { index ->
+            repeat(42) { index ->
                 val date = today.minusDays(8).plusDays(index / 5L)
                 val time = date.atTime(listOf(10, 12, 15, 17, 20)[index % 5], 10).atZone(zone)
-                val answered = index < 25
+                val answered = index < 35
                 container.repository.dao.upsertSample(SampleEntity("fixture-$id-$index", id, time.toInstant().toEpochMilli() - 600_000,
-                    time.toInstant().toEpochMilli(), if (answered) SampleStatus.ANSWERED else if (index < 28) SampleStatus.SKIPPED else SampleStatus.UNPROCESSED,
+                    time.toInstant().toEpochMilli(), if (answered) SampleStatus.ANSWERED else if (index < 38) SampleStatus.SKIPPED else SampleStatus.UNPROCESSED,
                     if (answered) options[index % 5].id else null, if (answered) time.toInstant().toEpochMilli() else null,
                     date.toString(), time.hour, zone.id, time.toInstant().toEpochMilli(), if (answered) zone.id else null))
             }
         }
         try {
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasText("统计样本 ›"))
-            compose.onNodeWithText("统计样本 ›").performClick()
-            compose.onNodeWithTag("history-list").performScrollToIndex(29)
-            compose.onNodeWithTag("history-list").performScrollToNode(hasText("没有更早的记录了"))
-            compose.onNodeWithText("没有更早的记录了").assertIsDisplayed()
-            compose.onNodeWithTag("history-list").performScrollToIndex(0)
-            compose.onNodeWithText("查看统计").performClick()
-            compose.onNodeWithText("筛选").performClick()
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasContentDescription("统计样本统计"))
+            compose.onNodeWithContentDescription("统计样本统计").performClick()
+            compose.onNodeWithText("筛选").assertDoesNotExist()
+            compose.onNodeWithText("查看统计").assertDoesNotExist()
+            // Fixtures span today-8..today; the default 7-day window holds answers 10..34 and drops the oldest 10.
+            compose.waitUntil(10_000) { compose.onAllNodesWithText("25").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("25 条"))
+            compose.onNodeWithTag("statistics-list").performScrollToNode(hasTestTag("history-record-fixture-$id-10"))
+            compose.onNodeWithTag("history-record-fixture-$id-9").assertDoesNotExist()
+            compose.onNodeWithTag("history-record-fixture-$id-0").assertDoesNotExist()
+            compose.onNodeWithTag("statistics-list").performScrollToIndex(0)
+            compose.onNodeWithTag("date-range").performClick()
             compose.onNodeWithText("最近 30 天").performClick()
             compose.onNodeWithText("应用筛选").performClick()
-            compose.waitUntil(10_000) { compose.onAllNodesWithText("25").fetchSemanticsNodes().isNotEmpty() }
+            compose.waitUntil(10_000) { compose.onAllNodesWithText("35").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText("3").assertExists()
+            compose.onNodeWithText("4").assertExists()
+            compose.onNodeWithText("日期趋势").assertIsDisplayed()
             screenshot("statistics-populated")
+            compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("35 条"))
+            // Records and statistics share the date range: only answered rows are listed, oldest included.
+            compose.onNodeWithTag("statistics-list").performScrollToNode(hasTestTag("history-record-fixture-$id-0"))
+            compose.onNodeWithTag("history-record-fixture-$id-0").assertIsDisplayed()
+            compose.onNodeWithTag("history-record-fixture-$id-35").assertDoesNotExist()
+            compose.onNodeWithTag("history-record-fixture-$id-40").assertDoesNotExist()
+            compose.onNodeWithText("已停用选项").assertDoesNotExist()
+            screenshot("statistics-records")
             compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("按选项统计"))
-            compose.onAllNodesWithText("5 次 · 20%").assertCountEquals(5)
+            compose.onAllNodesWithText("7 次 · 20%").assertCountEquals(5)
             screenshot("statistics-options")
-            compose.onNodeWithText("筛选").performClick()
+            compose.onNodeWithTag("statistics-list").performScrollToIndex(0)
+            compose.onNodeWithTag("date-range").performClick()
             compose.onNodeWithText("开始：${today.minusDays(29)}").performClick()
             chooseDate(today.plusDays(1))
             compose.onNodeWithText("开始日期不能晚于结束日期").assertIsDisplayed()
@@ -76,7 +92,7 @@ class StatisticsFlowTest {
             chooseDate(today.plusDays(2))
             compose.onNodeWithText("应用筛选").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithText("这个日期范围内还没有回答记录").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithText("5 次 · 20%").assertDoesNotExist()
+            compose.onNodeWithText("7 次 · 20%").assertDoesNotExist()
         } finally { runBlocking { container.reminders.delete(id) } }
     }
 

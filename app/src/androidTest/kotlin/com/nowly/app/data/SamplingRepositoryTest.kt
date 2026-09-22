@@ -34,6 +34,54 @@ class SamplingRepositoryTest {
     @Before fun setup() { db = Room.inMemoryDatabaseBuilder(context, NowlyDatabase::class.java).build(); repo = OfflineProjectRepository(db) }
     @After fun teardown() { db.close() }
 
+    @Test fun mergedRecordsListOnlyAnswersWhileStatisticsKeepOtherStates() = runBlocking {
+        val custom = draft()
+        repo.saveDraft(custom, 1)
+        val answeredIds = mutableListOf<String>()
+        repeat(35) { index ->
+            val at = planned + index * 60_000L
+            val sample = repo.newOccurrence(custom.id, at, zone)!!
+            assertTrue(repo.answer(sample.id, custom.options.first().id, at + 30_000, zone))
+            answeredIds += sample.id
+        }
+        // More than a page of newer non-answers must not hide older answers.
+        repeat(40) { index ->
+            val sample = repo.newOccurrence(custom.id, planned + 86_400_000 + index * 60_000L, zone)!!
+            repo.dao.skip(sample.id)
+        }
+        repo.newOccurrence(custom.id, planned + 2 * 86_400_000, zone)
+        repo.newOccurrence(custom.id, planned + 2 * 86_400_000 + 60_000, zone)
+        val all = repo.dao.observeRange(custom.id, "2026-09-18", "2026-09-22").first()
+        val stats = com.nowly.app.statistics.StatisticsData.from(all)
+        assertEquals(answeredIds.asReversed(), stats.answeredRecords.map { it.id })
+        assertTrue(stats.answeredRecords.all { it.status == SampleStatus.ANSWERED && it.answeredAt != null })
+        assertEquals(35, stats.answered); assertEquals(40, stats.skipped); assertEquals(1, stats.unprocessed)
+        assertEquals(77, all.size)
+        assertEquals(40, all.count { it.status == SampleStatus.SKIPPED })
+        assertEquals(1, all.count { it.status == SampleStatus.UNPROCESSED })
+        assertEquals(1, all.count { it.status == SampleStatus.PENDING })
+    }
+
+    @Test fun orderedOnlyUpgradePreservesExistingOptionsAndAnswers() = runBlocking {
+        val custom = draft().copy(ordered = false)
+        repo.saveDraft(custom, 1)
+        val original = repo.dao.project(custom.id)!!.copy(ordered = false)
+        repo.dao.upsert(original)
+        repo.dao.upsertMetadata(MetadataEntity("initialized", "1"))
+        val sample = repo.newOccurrence(custom.id, planned, zone)!!
+        repo.answer(sample.id, custom.options.first().id, planned + 60_000, zone)
+        val answer = repo.dao.sample(sample.id)
+        val options = repo.dao.options(custom.id)
+        repo.initialize(2)
+        repo.initialize(3)
+        assertEquals(original.copy(ordered = true), repo.dao.project(custom.id))
+        assertEquals(options, repo.dao.options(custom.id))
+        assertEquals(answer, repo.dao.sample(sample.id))
+        assertEquals(custom.times, repo.projects().single().times)
+        repo.saveDraft(custom.copy(name = "有序项目"), 4)
+        assertTrue(repo.dao.project(custom.id)!!.ordered)
+    }
+
     @Test fun initializationIsAtomicIdempotentAndDoesNotRecreateDeletedProjects() = runBlocking {
         coroutineScope { repeat(4) { launch { repo.initialize(100) } } }
         val projects = repo.projects()

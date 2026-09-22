@@ -44,6 +44,20 @@ class OptionEdgeScrollingTest {
         while (!node.isClickable) node = node.parent ?: error("No click action for $text")
         check(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
     }
+    private fun openSettings(description: String) {
+        repeat(15) {
+            val target = nodes().firstOrNull { it.contentDescription?.toString() == description && it.isVisibleToUser }
+            if (target != null) {
+                var node: AccessibilityNodeInfo = target
+                while (!node.isClickable) node = node.parent ?: error("No click action for $description")
+                check(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
+                return
+            }
+            nodes().firstOrNull { it.isScrollable }?.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+            SystemClock.sleep(250)
+        }
+        error("Settings entry not visible: $description")
+    }
     private fun lastVisibleOption(): Int = nodes().mapNotNull {
         it.contentDescription?.toString()?.takeIf { label -> label.startsWith("调整选项 ") }
             ?.substringAfter("调整选项 ")?.substringBefore(" 顺序")?.toIntOrNull()
@@ -56,14 +70,13 @@ class OptionEdgeScrollingTest {
             lateinit var container: AppContainer
             scenario.onActivity { container = (it.application as NowlyApplication).container }
             try {
-                awaitNode { it.text?.toString() == "心情 ›" }
+                awaitNode { it.text?.toString() == "心情" }
                 val original = runBlocking {
                     container.reminders.save(ProjectDraft(id, "边缘滚动测试", "请选择当前等级", true,
                         List(20) { AnswerOption(UUID.randomUUID().toString(), "等级 ${it + 1}", it) }, listOf(600, 1200)))
                     container.repository.projects().first { it.id == id }
                 }
-                click("边缘滚动测试 ›")
-                click("设置")
+                openSettings("边缘滚动测试设置")
                 val handle = awaitNode { it.contentDescription?.toString() == "调整选项 1 顺序" }
                 val initialLast = lastVisibleOption()
                 val viewport = bounds(awaitNode { it.isScrollable })
@@ -91,8 +104,8 @@ class OptionEdgeScrollingTest {
                     assertTrue("Holding still should reveal more options", visibleAfterHolding > visibleAtEdge)
                 } finally { inject(MotionEvent.ACTION_UP, edge) }
                 SystemClock.sleep(500)
-                click("保存项目")
-                awaitNode { it.text?.toString() == "采样记录" }
+                click("保存")
+                awaitNode { it.contentDescription?.toString() == "边缘滚动测试设置" }
                 val updated = runBlocking { container.repository.projects().first { it.id == id } }
                 val finalPosition = updated.options.indexOfFirst { it.id == original.options.first().id } + 1
                 println("Edge scroll saved: initialLast=$initialLast, finalPosition=$finalPosition")

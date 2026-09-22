@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable private data object Home : NavKey
-@Serializable private data class Detail(val id: String) : NavKey
 @Serializable private data class Editor(val id: String, val create: Boolean) : NavKey
 @Serializable private data class Statistics(val id: String) : NavKey
 @Serializable private data class Answer(val id: String) : NavKey
@@ -65,12 +64,9 @@ fun NowlyApp(container: AppContainer) {
     Box(Modifier.fillMaxSize()) {
         NavDisplay(backStack = backStack, onBack = { back() }, entryProvider = entryProvider {
             entry<Home> {
-                HomeScreen(state, { backStack.add(Editor(UUID.randomUUID().toString(), true)) },
-                    { backStack.add(Detail(it)) }, vm::enable, { backStack.add(Answer(it)) })
-            }
-            entry<Detail> { route ->
-                ProjectDetailScreen(route.id, projects.firstOrNull { it.id == route.id }, vm, ::back,
-                    { backStack.add(Editor(route.id, false)) }, { backStack.add(Statistics(route.id)) }, { backStack.add(Answer(it)) })
+                HomeScreen(state, onCreate = { backStack.add(Editor(UUID.randomUUID().toString(), true)) },
+                    onEdit = { backStack.add(Editor(it, false)) }, onStatistics = { backStack.add(Statistics(it)) },
+                    onAnswer = { backStack.add(Answer(it)) })
             }
             entry<Editor> { route ->
                 ProjectEditorScreen(route.id, route.create, projects.firstOrNull { it.id == route.id },
@@ -84,7 +80,7 @@ fun NowlyApp(container: AppContainer) {
                     onSave = { draft ->
                         vm.save(draft)
                         back()
-                        if (route.create) backStack.add(Detail(draft.id))
+                        if (route.create) backStack.add(Statistics(draft.id))
                     },
                     onDelete = {
                         vm.delete(route.id)

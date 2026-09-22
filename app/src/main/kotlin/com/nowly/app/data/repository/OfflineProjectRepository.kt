@@ -23,10 +23,13 @@ class OfflineProjectRepository(private val database: NowlyDatabase) : ProjectRep
     }
 
     override suspend fun saveProject(project: RecordProject) {
-        dao.upsert(ProjectEntity(project.id, project.name, project.question, project.remindersEnabled, project.createdAtEpochMillis, project.ordered))
+        dao.upsert(ProjectEntity(project.id, project.name, project.question, project.remindersEnabled, project.createdAtEpochMillis, true))
     }
 
     suspend fun initialize(now: Long) = database.withTransaction {
+        // Legacy categories become ordered scales in their existing option order.
+        // Keep the v2 schema and every option/sample identity intact.
+        dao.useOrderedOptions()
         if (dao.metadata("initialized") != null) return@withTransaction
         if (dao.bundles().isEmpty()) {
             val id = UUID.randomUUID().toString()
@@ -45,7 +48,8 @@ class OfflineProjectRepository(private val database: NowlyDatabase) : ProjectRep
         require(DraftValidation.error(draft) == null) { DraftValidation.error(draft).orEmpty() }
         draft.options.forEach { option -> require(dao.option(option.id)?.projectId?.let { it == draft.id } != false) }
         val existing = dao.project(draft.id)
-        dao.upsert(ProjectEntity(draft.id, draft.name.trim(), draft.question.trim(), existing?.remindersEnabled ?: true, existing?.createdAtEpochMillis ?: now, draft.ordered))
+        dao.upsert(ProjectEntity(draft.id, draft.name.trim(), draft.question.trim(),
+            draft.remindersEnabled ?: existing?.remindersEnabled ?: true, existing?.createdAtEpochMillis ?: now, true))
         val previousOptions = dao.options(draft.id).associateBy { it.id }
         var nextColor = (previousOptions.values.maxOfOrNull { it.colorIndex } ?: -1) + 1
         dao.deactivateOptions(draft.id)

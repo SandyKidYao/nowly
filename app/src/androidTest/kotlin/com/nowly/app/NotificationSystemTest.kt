@@ -42,7 +42,16 @@ class NotificationSystemTest {
         container.reminders.reconcile()
         return sample
     }
-    private fun notification() = notifications.activeNotifications.first { it.notification.extras.getString(AndroidReminderGateway.EXTRA_OCCURRENCE)?.startsWith("$id@") == true }.notification
+    // NotificationManager publishes asynchronously; poll briefly before reading the posted notification.
+    private fun notification(): android.app.Notification {
+        val deadline = android.os.SystemClock.uptimeMillis() + 5_000
+        while (true) {
+            notifications.activeNotifications.firstOrNull { it.notification.extras.getString(AndroidReminderGateway.EXTRA_OCCURRENCE)?.startsWith("$id@") == true }
+                ?.let { return it.notification }
+            if (android.os.SystemClock.uptimeMillis() > deadline) error("No Nowly notification for $id among ${notifications.activeNotifications.size} active notifications")
+            android.os.SystemClock.sleep(100)
+        }
+    }
     private suspend fun awaitStatus(sample: SampleEntity, status: String) = withTimeout(10_000) {
         container.repository.dao.observeSample(sample.id).first { it?.status == status }
     }

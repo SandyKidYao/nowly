@@ -30,15 +30,14 @@ class OptionReorderingTest {
     @After fun cleanup() { runBlocking { container.reminders.delete(id) } }
 
     private fun openEditor(count: Int): RecordProject {
-        compose.waitUntil(10_000) { compose.onAllNodesWithText("心情 ›").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("心情").fetchSemanticsNodes().isNotEmpty() }
         val original = runBlocking {
             container.reminders.save(ProjectDraft(id, "排序测试", "请选择当前等级", true,
                 List(count) { AnswerOption(UUID.randomUUID().toString(), "等级 ${it + 1}", it) }, listOf(600, 1200)))
             container.repository.projects().first { it.id == id }
         }
-        compose.onNodeWithTag("projects-list").performScrollToNode(hasText("排序测试 ›"))
-        compose.onNodeWithText("排序测试 ›").performClick()
-        compose.onNodeWithText("设置").performClick()
+        compose.onNodeWithTag("projects-list").performScrollToNode(hasContentDescription("排序测试设置"))
+        compose.onNodeWithContentDescription("排序测试设置").performClick()
         compose.onNodeWithTag("editor-list").performScrollToIndex(1)
         return original
     }
@@ -79,8 +78,8 @@ class OptionReorderingTest {
         compose.onNodeWithTag("option-input-${first.id}").assertTextContains("改名后的等级")
         compose.onNodeWithText("上移").assertDoesNotExist()
         captureEvidence(compose, "option-reordering")
-        compose.onNodeWithText("保存项目").performClick()
-        compose.waitUntil(10_000) { compose.onAllNodesWithText("采样记录").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("保存").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("projects-list").fetchSemanticsNodes().isNotEmpty() }
         val updated = runBlocking { container.repository.projects().first { it.id == id } }
         assertEquals(listOf(second.id, first.id) + original.options.drop(2).map { it.id }, updated.options.map { it.id })
         assertEquals("改名后的等级", updated.options.first { it.id == first.id }.label)
