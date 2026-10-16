@@ -16,13 +16,15 @@
     "containerTint": "#E5EAE1",
     "outline": "#D9E0D5",
     "accentSand": "#C6B7A1",
-    "chartPalette": [
-      "#DCE3D8",
-      "#BCCAB8",
-      "#99AD95",
-      "#728D70",
-      "#496548"
-    ]
+    "chartScale": {
+      "lowPole": "#9A5B26",
+      "lowTint": "#D4AC80",
+      "middle": "#CDC8BC",
+      "highTint": "#9DB6C9",
+      "highPole": "#2E5E78",
+      "retired": "#8C8F88",
+      "fiveLevels": ["#9A5B26", "#D4AC80", "#CDC8BC", "#9DB6C9", "#2E5E78"]
+    }
   },
   "typography": {
     "family": "system-sans-serif",

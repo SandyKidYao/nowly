@@ -52,9 +52,9 @@ class SamplingRepositoryTest {
         repo.newOccurrence(custom.id, planned + 2 * 86_400_000, zone)
         repo.newOccurrence(custom.id, planned + 2 * 86_400_000 + 60_000, zone)
         val all = repo.dao.observeRange(custom.id, "2026-09-18", "2026-09-22").first()
-        val stats = com.nowly.app.statistics.StatisticsData.from(all)
-        assertEquals(answeredIds.asReversed(), stats.answeredRecords.map { it.id })
-        assertTrue(stats.answeredRecords.all { it.status == SampleStatus.ANSWERED && it.answeredAt != null })
+        val stats = com.nowly.app.statistics.StatisticsData.from(all, com.nowly.app.statistics.LevelScale(custom.options),
+            java.time.LocalDate.parse("2026-09-18"), java.time.LocalDate.parse("2026-09-22"))
+        assertEquals(answeredIds.toSet(), all.filter { it.status == SampleStatus.ANSWERED && it.answeredAt != null }.map { it.id }.toSet())
         assertEquals(35, stats.answered); assertEquals(40, stats.skipped); assertEquals(1, stats.unprocessed)
         assertEquals(77, all.size)
         assertEquals(40, all.count { it.status == SampleStatus.SKIPPED })

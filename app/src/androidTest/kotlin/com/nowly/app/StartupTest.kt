@@ -97,7 +97,7 @@ class StartupTest {
         compose.onNodeWithText("采样记录").assertDoesNotExist()
         compose.onNodeWithText("今天还没有采样记录。").assertDoesNotExist()
         compose.onNodeWithText("详细图表").assertDoesNotExist()
-        compose.onNodeWithText("日期趋势").assertIsDisplayed()
+        compose.onNodeWithText("平均趋势").assertIsDisplayed()
         screenshot("statistics-empty")
         compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("按选项统计"))
         compose.onNodeWithText("按选项统计").assertIsDisplayed()
