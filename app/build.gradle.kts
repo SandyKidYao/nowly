@@ -55,7 +55,9 @@ android {
         warningsAsErrors = true
         // Versions are deliberately pinned as a compatible build baseline.
         // Remote "latest version" discovery is not a reproducible quality check.
-        disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable")
+        // Target SDK upgrades need their own behavior testing; the runner's installed
+        // SDK inventory must not change the result for our pinned Android 36 target.
+        disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable", "OldTargetApi")
     }
 }
 

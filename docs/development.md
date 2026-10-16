@@ -37,7 +37,7 @@ Kotlin 路径前缀：`app/src/main/kotlin/com/nowly/app/`。
 
 修改状态流时优先验证重复事件、回答/跳过/替换竞争、旧通知回调与提交后返回。修改日期或统计时验证跨日、时区、空区间、停用选项和比较区间。修改数据库时提交 schema 与保留数据的迁移测试。
 
-依赖集中固定在 `gradle/libs.versions.toml`。Lint 将警告视为错误，只关闭在线新版本提示。Reorderable 的 Apache-2.0 License/NOTICE 随包保留在 `app/src/main/assets/licenses/`。
+依赖集中固定在 `gradle/libs.versions.toml`。Lint 将警告视为错误，关闭在线依赖新版本提示及 `OldTargetApi`（目标 SDK 固定为 36，不因 runner 安装了更高 SDK 就改变结果）。升级目标 SDK 需单独验证行为变化，代码和资源检查保持开启。Reorderable 的 Apache-2.0 License/NOTICE 随包保留在 `app/src/main/assets/licenses/`。
 
 ## 持续集成
 
