@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing published release tag to rebuild
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    name: Build signed APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+      prerelease: ${{ steps.release.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          persist-credentials: false
+      - name: Validate published release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]] || { echo 'Use a tag such as v0.2.5 or v0.2.5-beta.1'; exit 1; }
+          gh release view "$RELEASE_TAG" --json isDraft,isPrerelease > "$RUNNER_TEMP/release.json"
+          jq -e '.isDraft == false' "$RUNNER_TEMP/release.json"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$(jq -r .isPrerelease "$RUNNER_TEMP/release.json")" >> "$GITHUB_OUTPUT"
+          echo "NOWLY_VERSION_NAME=${RELEASE_TAG#v}" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Install SDK packages
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Restore signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.NOWLY_KEYSTORE_BASE64 }}
+          NOWLY_KEYSTORE_PASSWORD: ${{ secrets.NOWLY_KEYSTORE_PASSWORD }}
+          NOWLY_KEY_ALIAS: ${{ secrets.NOWLY_KEY_ALIAS }}
+          NOWLY_KEY_PASSWORD: ${{ secrets.NOWLY_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in KEYSTORE_BASE64 NOWLY_KEYSTORE_PASSWORD NOWLY_KEY_ALIAS NOWLY_KEY_PASSWORD; do
+            [[ -n "${!name}" ]] || { echo "Missing signing secret: $name"; exit 1; }
+          done
+          umask 077
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/nowly-release.jks"
+          echo "NOWLY_KEYSTORE_PATH=$RUNNER_TEMP/nowly-release.jks" >> "$GITHUB_ENV"
+      - name: Verify and build release
+        env:
+          NOWLY_KEYSTORE_PASSWORD: ${{ secrets.NOWLY_KEYSTORE_PASSWORD }}
+          NOWLY_KEY_ALIAS: ${{ secrets.NOWLY_KEY_ALIAS }}
+          NOWLY_KEY_PASSWORD: ${{ secrets.NOWLY_KEY_PASSWORD }}
+        run: |
+          python3 scripts/check-site.py
+          node --check site/app.js
+          ./gradlew :app:testDebugUnitTest :app:lintRelease :app:assembleRelease
+      - name: Verify APK signature and publish assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose app/build/outputs/apk/release/app-release.apk
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/nowly.apk
+          (cd dist && sha256sum nowly.apk > nowly.apk.sha256)
+          gh release upload "$RELEASE_TAG" dist/nowly.apk dist/nowly.apk.sha256 --clobber
+      - name: Remove signing material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/nowly-release.jks"
+
+  pages:
+    name: Publish product page
+    needs: apk
+    # Preview releases have APKs, but do not replace the stable product page.
+    if: needs.apk.outputs.prerelease == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.apk.outputs.tag }}
+          persist-credentials: false
+      - name: Prepare product page
+        env:
+          RELEASE_TAG: ${{ needs.apk.outputs.tag }}
+        run: |
+          python3 scripts/check-site.py
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('site/release.json').write_text(json.dumps({'tag': os.environ['RELEASE_TAG']}) + '\n')
+          PY
+          touch site/.nojekyll
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

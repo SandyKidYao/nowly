@@ -15,8 +15,20 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 7
-        versionName = "0.2.5-mvp"
+        versionName = providers.environmentVariable("NOWLY_VERSION_NAME").orElse("0.2.5-mvp").get()
         testInstrumentationRunner = "com.nowly.app.NowlyTestRunner"
+    }
+
+    val releaseStore = providers.environmentVariable("NOWLY_KEYSTORE_PATH").orNull
+    if (releaseStore != null) {
+        signingConfigs {
+            create("distribution") {
+                storeFile = file(releaseStore)
+                storePassword = providers.environmentVariable("NOWLY_KEYSTORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("NOWLY_KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("NOWLY_KEY_PASSWORD").get()
+            }
+        }
     }
 
     buildTypes {
@@ -25,6 +37,7 @@ android {
             versionNameSuffix = "-dev"
         }
         release {
+            if (releaseStore != null) signingConfig = signingConfigs.getByName("distribution")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

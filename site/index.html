@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F3F4EF">
+  <meta name="description" content="此刻 Nowly，一款轻量的 Android 日常状态记录 App。自定义提醒，轻点记录心情、压力与精力，在日常里看见自己的变化。离线使用，无需账号。">
+  <meta property="og:title" content="此刻 · Nowly — 留意此刻，就够了。">
+  <meta property="og:description" content="一个小问题，一次轻记录，慢慢看见日常的变化。Android · 离线 · 开源。">
+  <meta property="og:type" content="website">
+  <title>此刻 · Nowly — 留意此刻，就够了。</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="header wrap">
+    <a class="brand" href="./" aria-label="此刻 Nowly 首页"><img src="assets/mark.svg" width="36" height="36" alt=""><span>此刻 <span class="brand-en">NOWLY</span></span></a>
+    <nav aria-label="主导航"><a href="#experience">体验</a><a href="#questions">常见问题</a><a href="https://github.com/SandyKidYao/nowly">GitHub <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot"></span> 为日常，留一点觉察</p>
+        <h1 id="hero-title">留意此刻，<br>就够了。</h1>
+        <p class="intro">今天的你，感觉怎么样？<br>在忙碌之间回答一个小问题，<br>慢慢看见自己的变化。</p>
+        <div class="hero-actions"><a class="button primary" href="https://github.com/SandyKidYao/nowly/releases/latest/download/nowly.apk" data-download>下载 Android 版 <span aria-hidden="true">↓</span></a><a class="text-link" href="#experience">先看看怎么用 <span aria-hidden="true">↘</span></a></div>
+        <p class="availability">Android 8.0+ <span>·</span> 免费开源 <span>·</span> 无需账号</p>
+      </div>
+      <div class="hero-visual">
+        <span class="orbit orbit-one" aria-hidden="true"></span><span class="orbit orbit-two" aria-hidden="true"></span>
+        <p class="visual-label">A LITTLE CHECK-IN<br>WITH YOURSELF.</p>
+        <figure class="phone hero-phone"><img id="preview" src="assets/answer.png" width="1080" height="2400" alt="回答页：此刻，你的心情怎么样？轻点一个选项即可记录。" fetchpriority="high"></figure>
+        <span class="visual-note">片刻停留，<br>然后继续生活。</span>
+        <div class="preview-tabs" role="group" aria-label="切换应用截图"><button type="button" data-screen="home" aria-pressed="false">首页</button><button type="button" data-screen="answer" aria-pressed="true">记录</button><button type="button" data-screen="statistics" aria-pressed="false">回看</button></div>
+      </div>
+    </section>
+    <div class="principles wrap"><span>一个问题，轻轻记下</span><span>不必补填，自在跳过</span><span>留在本机，由你掌握</span></div>
+    <section class="experience wrap" id="experience" aria-labelledby="experience-title">
+      <div class="section-heading"><p class="eyebrow">01 / 留下此刻</p><h2 id="experience-title">从一个小问题开始。</h2><p>心情、压力、精力……你想留意什么，就记录什么。</p></div>
+      <div class="steps">
+        <article><span class="step-number">01</span><h3>问你在意的问题</h3><p>自定义问题和从低到高的选项，把每天的提醒安排在适合自己的时间。</p><div class="question-example"><span>此刻，你的精力如何？</span><div><i></i><i></i><i></i><i></i><i></i></div><small>很低 <span>很充沛</span></small></div></article>
+        <article><span class="step-number">02</span><h3>轻点一下，就记下了</h3><p>提醒到来，选择当下的感受。保存后直接返回，生活的节奏继续。</p><div class="reminder-example"><img src="assets/mark.svg" width="24" height="24" alt=""><span><small>此刻 · 现在</small><strong>给自己一个短暂的停顿</strong></span></div></article>
+        <article><span class="step-number">03</span><h3>错过了，也没关系</h3><p>不方便时可以跳过。不用追回上一刻的感受，下一次只回答当下。</p><div class="time-example"><span>10:00</span><i></i><span>12:00</span><i></i><strong>15:00</strong></div></article>
+      </div>
+    </section>
+    <section class="reflection" aria-labelledby="reflection-title"><div class="wrap reflection-grid">
+      <div class="statistics-visual"><figure class="phone statistics-phone"><img src="assets/statistics.png" width="1080" height="2400" alt="统计演示：平均等级、每日趋势和选项占比。图中使用合成数据。" loading="lazy"></figure><p class="image-caption">真实应用界面 · 合成演示数据</p></div>
+      <div class="reflection-copy"><p class="eyebrow">02 / 看见变化</p><h2 id="reflection-title">把零散的感受，<br>连成日常的轮廓。</h2><p>有些变化，回头看才会发现。选一段时间，看看自己的状态如何起伏，又在哪些时段有所不同。</p><dl><div><dt>看趋势</dt><dd>每天的平均等级，与前一段时间对比。</dd></div><div><dt>找规律</dt><dd>按时段、按选项，了解状态的分布。</dd></div><div><dt>再探索</dt><dd>导出 CSV，或复制整理好的分析提示词，交给自己选择的 AI 工具。</dd></div></dl></div>
+    </div></section>
+    <section class="privacy wrap" aria-labelledby="privacy-title"><span class="privacy-symbol" aria-hidden="true">◎</span><div><p class="eyebrow">03 / 属于自己</p><h2 id="privacy-title">你的感受，留在你这里。</h2><p>无需注册，离线使用。记录保存在手机本地，App 不联网。<br>是否导出、是否分享，由你决定。</p></div><a class="text-link" href="https://github.com/SandyKidYao/nowly">代码也公开，欢迎看看 <span aria-hidden="true">↗</span></a></section>
+    <section class="faq wrap" id="questions" aria-labelledby="faq-title"><div><p class="eyebrow">一些小问题</p><h2 id="faq-title">开始之前。</h2></div><div class="faq-list">
+      <details><summary>支持哪些手机？如何安装？</summary><p>支持 Android 8.0 及以上。从本页下载 APK，在手机上打开并按系统提示允许安装。当前没有 iOS 版。</p></details>
+      <details><summary>没有收到提醒怎么办？</summary><p>请先允许通知，并检查记录中的提醒开关。部分手机还需要开启自启动、允许后台运行；精确提醒可在系统“闹钟与提醒”中授权。强制停止后请重新打开 App。<a href="https://github.com/SandyKidYao/nowly/blob/main/docs/background-reminders.md">查看提醒帮助 ↗</a></p></details>
+      <details><summary>记录可以备份和恢复吗？</summary><p>目前可以导出 CSV，但还不能导入恢复。卸载、清除应用数据或丢失手机可能导致记录丢失。升级请直接覆盖安装。</p></details>
+      <details><summary>AI 分析会自动上传我的数据吗？</summary><p>App 只在本地整理提示词，不连接 AI 服务。你可以预览、复制后自行选择是否发送给外部工具。</p></details>
+      <details><summary>免费吗？可以参与开发吗？</summary><p>免费，采用 MIT 开源许可证。欢迎在 GitHub 提交问题、建议或代码。第三方组件保留各自的许可证。</p></details>
+    </div></section>
+    <section class="closing wrap"><img src="assets/mark.svg" width="54" height="54" alt=""><h2>从下一次提醒，<br>开始留意自己。</h2><a class="button primary" href="https://github.com/SandyKidYao/nowly/releases/latest/download/nowly.apk" data-download>下载此刻 <span aria-hidden="true">↓</span></a><p class="availability" id="release-label">Android 8.0+ · 免费开源</p><a class="release-link" href="https://github.com/SandyKidYao/nowly/releases/latest">查看版本与更新说明 ↗</a></section>
+  </main>
+  <footer class="footer wrap"><a class="brand" href="./"><img src="assets/mark.svg" width="28" height="28" alt=""><span>此刻 <span class="brand-en">NOWLY</span></span></a><span>留意此刻，就够了。</span><div><a href="https://github.com/SandyKidYao/nowly">GitHub</a><a href="https://github.com/SandyKidYao/nowly/blob/main/LICENSE">MIT License</a></div></footer>
+</body>
+</html>

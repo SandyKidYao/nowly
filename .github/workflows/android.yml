@@ -10,19 +10,24 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Install SDK packages
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Check product page
+        run: |
+          python3 scripts/check-site.py
+          node --check site/app.js
       - name: Build and verify
         run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:assembleDebugAndroidTest
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: nowly-debug
           path: app/build/outputs/apk/debug/app-debug.apk

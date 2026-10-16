@@ -16,3 +16,4 @@ keystore.properties
 .xiaobai/
 .local/
 tmp/
+site/.nojekyll

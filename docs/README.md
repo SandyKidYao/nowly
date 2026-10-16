@@ -1,26 +1,14 @@
-# Nowly 首版产品与设计文档
+# 开发文档
 
-后续开发以本目录中的需求与设计基线为准。线框定义页面结构和交互，苔灰 UI 稿与设计规范定义首版视觉风格；业务待定项继续按产品需求细化。
+这些文档描述当前已实现的行为。修改功能时同步更新对应约定；依赖版本以 `gradle/libs.versions.toml` 为准，构建参数以 Gradle 文件为准。
 
-| 文档 | 内容 |
+| 文档 | 何时查阅 |
 | --- | --- |
-| [产品需求](nowly-initial-requirements.md) | 已确认的 MVP 范围、行为规则和待明确事项 |
-| [定稿线框图](2026-09-17-wireframes-nowly.html) | 五个核心页面与相关状态、交互演示 |
-| [首版苔灰 UI 稿](2026-09-18-ui-nowly-moss.html) | 已确认的 A · 苔灰视觉基线 |
-| [UI 与品牌设计规范](nowly-ui-brand.md) | 配色、字体、组件和图标使用规则 |
-| [Design tokens](nowly-design-tokens.json) | 可复用的配色、字号、圆角和尺寸变量 |
+| [产品规则](product.md) | 修改记录、提醒、统计和导出行为前 |
+| [开发指南](development.md) | 搭建环境、了解代码结构和运行验证 |
+| [UI 与品牌](nowly-ui-brand.md) / [设计变量](nowly-design-tokens.json) | 修改界面、图表或品牌素材时 |
+| [后台提醒排查](background-reminders.md) | 排查厂商后台限制、权限与提醒延迟时 |
+| [版本决策记录](changelog.md) | 了解行为改变的原因；旧条目描述当时版本 |
+| [发布指南](releasing.md) | 发布 APK、维护签名和 GitHub Pages 时 |
 
-两个 HTML 文件均为自包含页面，可离线浏览。
-
-## 开发配套资料
-
-- [品牌标志 SVG](../assets/brand/nowly-mark.svg)
-- [应用图标 SVG](../assets/brand/nowly-app-icon.svg)
-- [技术选型](nowly-technical-selection.md)
-- [工程说明与运行方式](../README.md)
-
-- [MVP 实现约定](mvp-implementation.md)：需求未定边界的实现选择，随版本更新
-- [版本决策记录](changelog.md)：0.2.0 至今每个版本确认的产品与实现决策
-- [后台提醒真机排查](background-reminders.md)：vivo 真机后台限制的定位与设置
-
-过程材料（验证日志、截图、安装包校验值、方案比较页）不入库，位于 `.local/` 与 `tmp/`。
+过时的初始化需求、选型比较与首版 HTML 原型已移除；其中仍有效的约束合并进产品规则、开发指南和品牌规范。当前实现取代旧方案，Git 历史保留完整决策过程。

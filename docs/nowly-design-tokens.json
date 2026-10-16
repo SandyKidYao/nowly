@@ -1,11 +1,11 @@
 {
   "name": "Nowly / Moss & Quiet",
-  "version": "1.0",
+  "version": "0.2.5",
   "status": "selected",
   "selectedAt": "2026-09-18",
   "appearance": "light",
   "direction": "A · 苔灰",
-  "basis": "2026-09-17-wireframes-nowly.html",
+  "basis": "nowly-ui-brand.md",
   "color": {
     "background": "#F3F4EF",
     "surface": "#FCFCF9",
@@ -23,7 +23,13 @@
       "highTint": "#9DB6C9",
       "highPole": "#2E5E78",
       "retired": "#8C8F88",
-      "fiveLevels": ["#9A5B26", "#D4AC80", "#CDC8BC", "#9DB6C9", "#2E5E78"]
+      "fiveLevels": [
+        "#9A5B26",
+        "#D4AC80",
+        "#CDC8BC",
+        "#9DB6C9",
+        "#2E5E78"
+      ]
     }
   },
   "typography": {
@@ -87,8 +93,8 @@
     "appIconPreview": "../assets/brand/nowly-app-icon.svg"
   },
   "notes": [
-    "Values reproduce the approved HTML direction; map logical sizes and font weights to the chosen native UI stack.",
-    "The app icon SVG is the selected visual composition, not a generated Android adaptive-icon resource set.",
-    "Light appearance is selected; dark appearance and platform packaging are not included in this baseline."
+    "Map logical sizes to Android dp/sp; the Compose theme is the implementation source of truth.",
+    "The SVG app icon is the visual source; Android resources live in app/src/main/res/.",
+    "Fixed light appearance; no dynamic colors or dark appearance."
   ]
 }
