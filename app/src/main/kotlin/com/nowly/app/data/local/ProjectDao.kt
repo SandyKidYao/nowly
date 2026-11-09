@@ -19,9 +19,16 @@ interface ProjectDao {
     @Transaction @Query("SELECT * FROM projects ORDER BY createdAtEpochMillis, id")
     suspend fun bundles(): List<ProjectBundle>
     @Query("SELECT * FROM projects WHERE id = :id") suspend fun project(id: String): ProjectEntity?
+    @Query("SELECT projectId, COUNT(*) AS count FROM samples GROUP BY projectId")
+    fun observeSampleCounts(): Flow<List<ProjectSampleCount>>
+    @Query("SELECT COUNT(*) FROM samples WHERE projectId = :id") suspend fun sampleCount(id: String): Int
+    @Query("SELECT * FROM samples WHERE projectId = :id AND status = 'answered' AND numericValue IS NOT NULL AND id <> :excluded ORDER BY eventAt DESC, id DESC LIMIT 1")
+    fun latestNumeric(id: String, excluded: String = ""): Flow<SampleEntity?>
     @Query("UPDATE projects SET remindersEnabled = :enabled WHERE id = :id") suspend fun setEnabled(id: String, enabled: Boolean)
     @Query("UPDATE projects SET ordered = 1 WHERE ordered = 0") suspend fun useOrderedOptions()
     @Query("DELETE FROM projects WHERE id = :id") suspend fun deleteProject(id: String)
+    @Query("DELETE FROM options WHERE projectId = :id") suspend fun deleteOptions(id: String)
+    @Query("DELETE FROM samples WHERE id = :id") suspend fun deleteSample(id: String)
     @Upsert suspend fun upsertOptions(options: List<OptionEntity>)
     @Query("SELECT * FROM options WHERE projectId = :id") suspend fun options(id: String): List<OptionEntity>
     @Query("SELECT * FROM options WHERE id = :id") suspend fun option(id: String): OptionEntity?
@@ -29,6 +36,9 @@ interface ProjectDao {
     @Query("DELETE FROM reminder_times WHERE projectId = :projectId") suspend fun clearTimes(projectId: String)
     @Upsert suspend fun upsertTimes(times: List<ReminderTimeEntity>)
     @Upsert suspend fun upsertSample(sample: SampleEntity)
+    @Upsert suspend fun upsertSamples(samples: List<SampleEntity>)
+    @Query("SELECT * FROM samples WHERE projectId = :id ORDER BY eventAt, id")
+    suspend fun allSamples(id: String): List<SampleEntity>
     @Query("SELECT * FROM samples WHERE id = :id") suspend fun sample(id: String): SampleEntity?
     @Query("SELECT * FROM samples WHERE id = :id") fun observeSample(id: String): Flow<SampleEntity?>
     @Query("SELECT * FROM samples WHERE status = 'pending'") suspend fun pending(): List<SampleEntity>

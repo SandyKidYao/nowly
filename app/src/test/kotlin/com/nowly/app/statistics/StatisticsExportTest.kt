@@ -10,6 +10,13 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class StatisticsExportTest {
+    @Test fun weeklyChoicePromptDescribesItsWeekdaysInsteadOfClaimingDailyReminders() {
+        val weekly = project.copy(reminderFrequency = com.nowly.app.projects.ReminderFrequency.WEEKLY, reminderDays = 64)
+        val text = StatisticsExport.prompt(weekly, records, "2026-10-14", "2026-10-15", null, zone.id)
+        assertTrue(text.contains("每周提醒：周日 10:00、20:00"))
+        assertFalse(text.contains("每天在固定时间"))
+        assertFalse(text.contains("每日提醒时间"))
+    }
     private val zone = ZoneId.of("Asia/Shanghai")
     private val project = RecordProject("p", "心情", "此刻，你的心情怎么样？", true, 0, true,
         listOf(AnswerOption("bad", "不好", 0), AnswerOption("ok", "还行, 一般", 1), AnswerOption("good", "很好", 2), AnswerOption("gone", "旧选项", 3, active = false)),

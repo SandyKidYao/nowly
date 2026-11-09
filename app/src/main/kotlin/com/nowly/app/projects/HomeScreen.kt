@@ -25,7 +25,8 @@ import java.util.Locale
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(state: HomeUiState, onCreate: () -> Unit, onEdit: (String) -> Unit,
-    onStatistics: (String) -> Unit, onAnswer: (String) -> Unit) {
+    onStatistics: (String) -> Unit, onAnswer: (String) -> Unit,
+    onImport: (() -> Unit)? = null, transferEnabled: Boolean = true, onNumeric: ((String) -> Unit)? = null) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { insets ->
         LazyColumn(Modifier.fillMaxSize().padding(insets).testTag("projects-list"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
@@ -34,6 +35,8 @@ fun HomeScreen(state: HomeUiState, onCreate: () -> Unit, onEdit: (String) -> Uni
                         Text(stringResource(R.string.brand_name), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium)
                         Text("此刻", style = MaterialTheme.typography.headlineLarge)
                     }
+                    if (onImport != null) TextButton(onClick = onImport, enabled = transferEnabled,
+                        shape = MaterialTheme.shapes.small, modifier = Modifier.heightIn(min = 48.dp).testTag("import-project")) { Text("导入项目") }
                     TextButton(shape = MaterialTheme.shapes.small, onClick = onCreate, modifier = Modifier.size(48.dp).semantics { contentDescription = "创建记录" }) {
                         Text("＋", style = MaterialTheme.typography.headlineSmall)
                     }
@@ -79,14 +82,18 @@ fun HomeScreen(state: HomeUiState, onCreate: () -> Unit, onEdit: (String) -> Uni
                                     }
                                 }
                                 Text(project.question, style = MaterialTheme.typography.bodyLarge)
-                                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                if (project.kind == ProjectKind.NUMBER) Text("数字记录" + if (project.unit.isEmpty()) "" else " · ${project.unit}",
+                                    style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                else FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     project.options.filter { it.active }.forEach { option ->
                                         Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.extraSmall) {
                                             Text(option.label, Modifier.padding(horizontal = 10.dp, vertical = 5.dp), style = MaterialTheme.typography.labelMedium)
                                         }
                                     }
                                 }
-                                project.pendingId?.let { id -> Button(shape = MaterialTheme.shapes.small, onClick = { onAnswer(id) }, modifier = Modifier.fillMaxWidth()) { Text("记录当下") } }
+                                if (project.kind == ProjectKind.NUMBER && onNumeric != null) Button(shape = MaterialTheme.shapes.small,
+                                    onClick = { onNumeric(project.id) }, modifier = Modifier.fillMaxWidth().testTag("record-number-${project.id}")) { Text("记录数字") }
+                                else project.pendingId?.let { id -> Button(shape = MaterialTheme.shapes.small, onClick = { onAnswer(id) }, modifier = Modifier.fillMaxWidth()) { Text("记录当下") } }
                             }
                         }
                     }

@@ -188,7 +188,7 @@ class SamplingRepositoryTest {
             old.execSQL("INSERT INTO projects VALUES ('original', '已有项目', '原问题', 1, 1234)")
             old.version = 1
         }
-        val migrated = Room.databaseBuilder(context, NowlyDatabase::class.java, name).addMigrations(NowlyDatabase.MIGRATION_1_2).build()
+        val migrated = Room.databaseBuilder(context, NowlyDatabase::class.java, name).addMigrations(NowlyDatabase.MIGRATION_1_2, NowlyDatabase.MIGRATION_2_3).build()
         try {
             val old = migrated.projectDao().project("original")!!
             assertEquals("已有项目", old.name); assertEquals(1234L, old.createdAtEpochMillis)

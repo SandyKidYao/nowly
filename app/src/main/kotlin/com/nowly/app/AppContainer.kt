@@ -19,7 +19,7 @@ class AppContainer(context: Context, databaseName: String = "nowly.db") {
             context.applicationContext,
             NowlyDatabase::class.java,
             databaseName,
-        ).addMigrations(NowlyDatabase.MIGRATION_1_2).build()
+        ).addMigrations(NowlyDatabase.MIGRATION_1_2, NowlyDatabase.MIGRATION_2_3).build()
     }
 
     val clock: Clock = Clock.systemUTC()

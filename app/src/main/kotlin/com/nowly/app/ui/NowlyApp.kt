@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -25,6 +27,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.nowly.app.AppContainer
 import com.nowly.app.projects.*
 import com.nowly.app.recording.AnswerRoute
+import com.nowly.app.recording.NumericEntryRoute
 import com.nowly.app.statistics.StatisticsScreen
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -34,10 +37,14 @@ import kotlinx.serialization.Serializable
 @Serializable private data class Editor(val id: String, val create: Boolean) : NavKey
 @Serializable private data class Statistics(val id: String) : NavKey
 @Serializable private data class Answer(val id: String) : NavKey
+@Serializable private data class NumericEntry(val projectId: String, val editingId: String? = null,
+    val formId: String = UUID.randomUUID().toString()) : NavKey
 
 @Composable
 fun NowlyApp(container: AppContainer) {
     val vm = viewModel { MvpViewModel(container) }
+    val transfer = projectTransferControls(vm)
+    val transferBusy by vm.transferBusy.collectAsStateWithLifecycle()
     val state by vm.projects.collectAsStateWithLifecycle()
     val projects = (state as? HomeUiState.Ready)?.projects.orEmpty()
     val backStack = rememberNavBackStack(Home)
@@ -66,7 +73,9 @@ fun NowlyApp(container: AppContainer) {
             entry<Home> {
                 HomeScreen(state, onCreate = { backStack.add(Editor(UUID.randomUUID().toString(), true)) },
                     onEdit = { backStack.add(Editor(it, false)) }, onStatistics = { backStack.add(Statistics(it)) },
-                    onAnswer = { backStack.add(Answer(it)) })
+                    onAnswer = { backStack.add(Answer(it)) },
+                    onImport = transfer.importProject, transferEnabled = transfer.enabled,
+                    onNumeric = { backStack.add(NumericEntry(it)) })
             }
             entry<Editor> { route ->
                 ProjectEditorScreen(route.id, route.create, projects.firstOrNull { it.id == route.id },
@@ -87,9 +96,15 @@ fun NowlyApp(container: AppContainer) {
                         while (backStack.size > 1) backStack.removeLastOrNull()
                     })
             }
-            entry<Statistics> { route -> StatisticsScreen(route.id, projects.firstOrNull { it.id == route.id }, vm, ::back) }
+            entry<Statistics> { route -> StatisticsScreen(route.id, projects.firstOrNull { it.id == route.id }, vm, ::back,
+                onExportProject = { transfer.exportProject(route.id) }, transferEnabled = transfer.enabled,
+                onRecordNumber = { backStack.add(NumericEntry(route.id)) },
+                onEditNumber = { backStack.add(NumericEntry(route.id, it)) }) }
             entry<Answer> { route -> AnswerRoute(route.id, vm, ::back) }
+            entry<NumericEntry> { route -> NumericEntryRoute(route.projectId, route.editingId, vm, ::back) }
         })
+        if (transferBusy) LinearProgressIndicator(Modifier.align(Alignment.TopCenter).fillMaxWidth().statusBarsPadding()
+            .semantics { contentDescription = "正在处理项目文件" })
         SnackbarHost(snackbars, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
     }
 }

@@ -51,7 +51,16 @@ private class EditorState(val id: String, project: RecordProject?) {
     var remindersEnabled by mutableStateOf(project?.remindersEnabled ?: true)
     var options by mutableStateOf(project?.options?.filter { it.active } ?: List(2) { AnswerOption(UUID.randomUUID().toString(), "", it) })
     var times by mutableStateOf(project?.times ?: OfflineProjectRepository.defaultTimes)
-    fun draft() = ProjectDraft(id, name, question, true, options, times, remindersEnabled)
+    var kind by mutableStateOf(project?.kind ?: ProjectKind.CHOICE)
+    var unit by mutableStateOf(project?.unit.orEmpty())
+    var frequency by mutableStateOf(project?.reminderFrequency ?: ReminderFrequency.DAILY)
+    var days by mutableIntStateOf(project?.reminderDays ?: 127)
+    fun draft() = ProjectDraft(id, name, question, true, if (kind == ProjectKind.CHOICE) options else emptyList(), times,
+        remindersEnabled, kind, if (kind == ProjectKind.NUMBER) unit else "", frequency, days)
+    fun selectKind(value: String) {
+        kind = value
+        if (value == ProjectKind.CHOICE && options.isEmpty()) options = List(2) { AnswerOption(UUID.randomUUID().toString(), "", it) }
+    }
     fun move(fromId: String, toId: String): Boolean {
         val from = options.indexOfFirst { it.id == fromId }
         val to = options.indexOfFirst { it.id == toId }
@@ -69,10 +78,13 @@ private class EditorState(val id: String, project: RecordProject?) {
         val Saver = mapSaver(
             save = { state -> mapOf("id" to state.id, "name" to state.name, "question" to state.question,
                 "remindersEnabled" to state.remindersEnabled,
+                "kind" to state.kind, "unit" to state.unit, "frequency" to state.frequency, "days" to state.days,
                 "ids" to ArrayList(state.options.map { it.id }), "labels" to ArrayList(state.options.map { it.label }), "times" to ArrayList(state.times)) },
             restore = { saved -> EditorState(saved["id"] as String, null).apply {
                 name = saved["name"] as String; question = saved["question"] as String
                 remindersEnabled = saved["remindersEnabled"] as? Boolean ?: true
+                kind = saved["kind"] as? String ?: ProjectKind.CHOICE; unit = saved["unit"] as? String ?: ""
+                frequency = saved["frequency"] as? String ?: ReminderFrequency.DAILY; days = saved["days"] as? Int ?: 127
                 val ids = saved["ids"] as List<*>; val labels = saved["labels"] as List<*>
                 options = ids.mapIndexed { index, id -> AnswerOption(id as String, labels[index] as String, index) }
                 times = (saved["times"] as List<*>).map { it as Int }
@@ -81,6 +93,7 @@ private class EditorState(val id: String, project: RecordProject?) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, notificationsAllowed: Boolean,
     preciseAllowed: Boolean, onBack: () -> Unit, onNotificationPermission: () -> Unit, onExactPermission: () -> Unit,
@@ -130,13 +143,30 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                 item(key = "project-fields") {
                     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                         Text("信息", style = MaterialTheme.typography.titleMedium)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FilterChip(selected = state.kind == ProjectKind.CHOICE, onClick = { state.selectKind(ProjectKind.CHOICE) },
+                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("选项记录") }, modifier = Modifier.testTag("type-choice"))
+                            FilterChip(selected = state.kind == ProjectKind.NUMBER, onClick = { state.selectKind(ProjectKind.NUMBER) },
+                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("数字记录") }, modifier = Modifier.testTag("type-number"))
+                        }
+                        if (project?.hasHistory == true) Text("已有历史，记录方式保持不变。", style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (create && state.kind == ProjectKind.NUMBER) TextButton(onClick = {
+                            state.name = "体重"; state.question = "这次测得的体重是多少？"; state.unit = "kg"
+                            state.frequency = ReminderFrequency.WEEKLY; state.days = 64; state.times = listOf(480)
+                        }, enabled = editingEnabled, shape = MaterialTheme.shapes.small) { Text("使用每周体重示例") }
                         OutlinedTextField(shape = MaterialTheme.shapes.small, value = state.name, onValueChange = { state.name = it }, label = { Text("名称") }, modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = editingEnabled)
                         OutlinedTextField(shape = MaterialTheme.shapes.small, value = state.question, onValueChange = { state.question = it }, label = { Text("采样问题") }, modifier = Modifier.fillMaxWidth(), enabled = editingEnabled, minLines = 2)
+                        if (state.kind == ProjectKind.NUMBER) OutlinedTextField(value = state.unit, onValueChange = { state.unit = it },
+                            label = { Text("单位（可选）") }, placeholder = { Text("例如 kg、km、小时") },
+                            supportingText = { Text(if (project?.hasHistory == true) "已有历史，单位保持不变。" else "每次记录沿用这个单位。") },
+                            readOnly = project?.hasHistory == true, enabled = editingEnabled, singleLine = true,
+                            shape = MaterialTheme.shapes.small, modifier = Modifier.fillMaxWidth().testTag("number-unit"))
                         HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                        Text("回答选项", style = MaterialTheme.typography.titleMedium)
+                        if (state.kind == ProjectKind.CHOICE) Text("回答选项", style = MaterialTheme.typography.titleMedium)
                     }
                 }
-                itemsIndexed(state.options, key = { _, option -> option.id }) { index, option ->
+                itemsIndexed(if (state.kind == ProjectKind.CHOICE) state.options else emptyList(), key = { _, option -> option.id }) { index, option ->
                     ReorderableItem(reorderable, option.id, enabled = !saving) { dragging ->
                         val elevation by animateDpAsState(if (dragging) 4.dp else 0.dp, label = "option-drag-elevation")
                         Surface(
@@ -189,12 +219,27 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                 }
                 item(key = "sampling-settings") {
                     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                        TextButton(shape = MaterialTheme.shapes.small, onClick = { state.options = state.options + AnswerOption(UUID.randomUUID().toString(), "", state.options.size) }, enabled = editingEnabled && state.options.size < 20) { Text("＋ 添加选项") }
-                        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                        if (state.kind == ProjectKind.CHOICE) {
+                            TextButton(shape = MaterialTheme.shapes.small, onClick = { state.options = state.options + AnswerOption(UUID.randomUUID().toString(), "", state.options.size) }, enabled = editingEnabled && state.options.size < 20) { Text("＋ 添加选项") }
+                            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                        }
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Text("采样提醒", Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
                             Switch(state.remindersEnabled, { state.remindersEnabled = it }, enabled = editingEnabled,
                                 modifier = Modifier.testTag("reminder-switch").semantics { contentDescription = "提醒开关" })
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FilterChip(selected = state.frequency == ReminderFrequency.DAILY, onClick = { state.frequency = ReminderFrequency.DAILY; if (state.days == 0) state.days = 127 },
+                                enabled = editingEnabled, label = { Text("每天") }, modifier = Modifier.testTag("frequency-daily"))
+                            FilterChip(selected = state.frequency == ReminderFrequency.WEEKLY, onClick = { state.frequency = ReminderFrequency.WEEKLY },
+                                enabled = editingEnabled, label = { Text("每周") }, modifier = Modifier.testTag("frequency-weekly"))
+                        }
+                        if (state.frequency == ReminderFrequency.WEEKLY) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日").forEachIndexed { index, label ->
+                                val bit = 1 shl index
+                                FilterChip(selected = state.days and bit != 0, onClick = { state.days = state.days xor bit },
+                                    enabled = editingEnabled, label = { Text(label) }, modifier = Modifier.testTag("reminder-day-${index + 1}"))
+                            }
                         }
                         ReminderTimeline(state.times, enabled = editingEnabled, onChange = ::updateTime, onEnd = { state.times = state.times.sorted() })
                         state.times.forEachIndexed { index, minute ->
@@ -283,7 +328,7 @@ private fun ReminderTimeline(times: List<Int>, enabled: Boolean, onChange: (Int,
                 if (currentTimes.withIndex().none { it.index != selected && it.value == minute }) update(selected, minute)
             }
         })
-    }.semantics { contentDescription = "每日提醒时间轴；可拖动圆点，也可使用下方时间按钮精确修改" }) {
+    }.semantics { contentDescription = "提醒时间轴；可拖动圆点，也可使用下方时间按钮精确修改" }) {
         val inset = 12.dp.toPx(); val y = size.height / 2
         drawLine(line, Offset(inset, y), Offset(size.width - inset, y), 3.dp.toPx())
         times.forEach { minute -> drawCircle(primary, 7.dp.toPx(), Offset(inset + (size.width - 2 * inset) * minute / 1440f, y)) }

@@ -6,13 +6,17 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import androidx.room.ColumnInfo
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "options", foreignKeys = [ForeignKey(entity = ProjectEntity::class, parentColumns = ["id"], childColumns = ["projectId"], onDelete = ForeignKey.CASCADE)], indices = [Index("projectId")])
 data class OptionEntity(@PrimaryKey val id: String, val projectId: String, val label: String, val position: Int, val active: Boolean, val colorIndex: Int = position)
 
 @Entity(tableName = "reminder_times", primaryKeys = ["projectId", "minute"], foreignKeys = [ForeignKey(entity = ProjectEntity::class, parentColumns = ["id"], childColumns = ["projectId"], onDelete = ForeignKey.CASCADE)])
 data class ReminderTimeEntity(val projectId: String, val minute: Int)
 
+@Serializable
 @Entity(tableName = "samples", foreignKeys = [
     ForeignKey(entity = ProjectEntity::class, parentColumns = ["id"], childColumns = ["projectId"], onDelete = ForeignKey.CASCADE),
     ForeignKey(entity = OptionEntity::class, parentColumns = ["id"], childColumns = ["optionId"]),
@@ -22,7 +26,12 @@ data class SampleEntity(
     val status: String, val optionId: String?, val answeredAt: Long?,
     val localDate: String, val localHour: Int, val zoneId: String, val eventAt: Long,
     val answeredZoneId: String? = null,
+    @ColumnInfo(defaultValue = "NULL") val numericValue: String? = null,
+    @ColumnInfo(defaultValue = "'reminder'") val origin: String = SampleOrigin.REMINDER,
 )
+
+object SampleOrigin { const val REMINDER = "reminder"; const val MANUAL = "manual" }
+data class ProjectSampleCount(val projectId: String, val count: Int)
 
 object SampleStatus {
     const val PENDING = "pending"

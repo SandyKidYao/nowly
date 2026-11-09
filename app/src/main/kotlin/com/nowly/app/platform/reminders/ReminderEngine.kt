@@ -5,6 +5,8 @@ import com.nowly.app.data.local.SampleEntity
 import com.nowly.app.data.repository.OfflineProjectRepository
 import com.nowly.app.projects.ProjectDraft
 import com.nowly.app.projects.RecordProject
+import com.nowly.app.projects.ReminderFrequency
+import com.nowly.app.data.transfer.ProjectArchive
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -57,6 +59,17 @@ class ReminderEngine(
         synchronizeEffects()
     }
 
+    suspend fun exportProject(id: String): ProjectArchive = mutex.withLock {
+        repository.exportProject(id, clock.millis())
+    }
+
+    suspend fun importProject(archive: ProjectArchive, replace: Boolean) = mutex.withLock {
+        repository.importProject(archive, replace)
+        cancelAfterCommit(archive.project.id)
+        // Restore pending notifications silently and schedule only future alarms.
+        synchronizeEffects()
+    }
+
     suspend fun answer(id: String, optionId: String, at: Long, zoneAtTap: ZoneId = zone()): Boolean = mutex.withLock {
         val sample = repository.dao.sample(id)
         val changed = repository.answer(id, optionId, at, zoneAtTap)
@@ -69,6 +82,15 @@ class ReminderEngine(
         if (repository.dao.skip(id) == 1 && sample != null) cancelAfterCommit(sample.projectId)
     }
 
+    suspend fun saveNumeric(projectId: String, value: String, measuredAt: Long, zoneAtEntry: ZoneId,
+        entryId: String, pendingId: String? = null, editing: SampleEntity? = null): Boolean = mutex.withLock {
+        val saved = repository.saveNumeric(projectId, value, measuredAt, clock.millis(), zoneAtEntry, entryId, pendingId, editing)
+        if (saved != null && pendingId != null) cancelAfterCommit(projectId)
+        saved != null
+    }
+
+    suspend fun deleteNumeric(expected: SampleEntity): Boolean = mutex.withLock { repository.deleteNumeric(expected) }
+
     suspend fun fire(token: String, plannedAt: Long) = mutex.withLock {
         repository.initialize(clock.millis())
         if (repository.dao.metadata("alarm")?.value != "$token|$plannedAt") return@withLock
@@ -77,7 +99,7 @@ class ReminderEngine(
         // Establish the next future wake-up before posting current notifications.
         scheduleLocked(projects)
         if (gateway.canNotify()) {
-            projects.filter { it.remindersEnabled && ReminderPlanner.isDue(Instant.ofEpochMilli(plannedAt), zone(), it.times) }
+            projects.filter { it.remindersEnabled && ReminderPlanner.isDue(Instant.ofEpochMilli(plannedAt), zone(), it.times, it.days()) }
                 .forEach { project ->
                     repository.newOccurrence(project.id, plannedAt, zone())?.let { sample ->
                         gateway.publish(project, sample, silent = sample.submittedAt != null)
@@ -129,8 +151,9 @@ class ReminderEngine(
             gateway.schedule(oldAt, old[0])
             return
         }
-        val at = if (gateway.canNotify()) ReminderPlanner.next(clock.instant(), zone(),
-            projects.filter { it.remindersEnabled }.flatMap { it.times }.distinct())?.toEpochMilli() else null
+        val at = if (gateway.canNotify()) projects.filter { it.remindersEnabled }.mapNotNull {
+            ReminderPlanner.next(clock.instant(), zone(), it.times, it.days())
+        }.minOrNull()?.toEpochMilli() else null
         if (at == null) {
             repository.dao.upsertMetadata(MetadataEntity("alarm", ""))
             gateway.cancelAlarm()
@@ -141,4 +164,6 @@ class ReminderEngine(
             gateway.schedule(at, token)
         }
     }
+
+    private fun RecordProject.days() = if (reminderFrequency == ReminderFrequency.WEEKLY) reminderDays else 127
 }

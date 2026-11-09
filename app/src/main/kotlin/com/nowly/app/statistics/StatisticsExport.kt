@@ -3,6 +3,8 @@ package com.nowly.app.statistics
 import com.nowly.app.data.local.SampleEntity
 import com.nowly.app.data.local.SampleStatus
 import com.nowly.app.projects.RecordProject
+import com.nowly.app.projects.ProjectKind
+import com.nowly.app.projects.ReminderFrequency
 import com.nowly.app.ui.minuteLabel
 import com.nowly.app.ui.timeLabel
 import java.time.LocalDate
@@ -26,6 +28,7 @@ object StatisticsExport {
         "nowly-${project.name.replace(Regex("[\\\\/:*?\"<>|\\s]+"), "_")}-$start-$end.csv"
 
     fun csv(project: RecordProject, records: List<SampleEntity>): String {
+        if (project.kind == ProjectKind.NUMBER) return NumericStatisticsExport.csv(project, records)
         val scale = LevelScale(project.options)
         val rows = records.sortedWith(compareBy<SampleEntity> { it.eventAt }.thenBy { it.id }).map { record ->
             val option = record.optionId?.let { id -> project.options.firstOrNull { it.id == id } }
@@ -38,6 +41,7 @@ object StatisticsExport {
     }
 
     fun prompt(project: RecordProject, records: List<SampleEntity>, start: String, end: String, previousMean: Double?, zone: String): String {
+        if (project.kind == ProjectKind.NUMBER) return NumericStatisticsExport.prompt(project, records, start, end)
         val scale = LevelScale(project.options)
         val stats = StatisticsData.from(records, scale, LocalDate.parse(start), LocalDate.parse(end))
         val days = ChronoUnit.DAYS.between(LocalDate.parse(start), LocalDate.parse(end)) + 1
@@ -45,14 +49,20 @@ object StatisticsExport {
         val retired = project.options.filter { !it.active && (stats.options[it.id] ?: 0) > 0 }
         val sorted = records.sortedWith(compareBy<SampleEntity> { it.eventAt }.thenBy { it.id })
         return buildString {
-            appendLine("你是一位擅长个人数据分析的助手。下面是我用「此刻 Nowly」做经验采样记录的数据：App 每天在固定时间提醒我，我用一个单选回答当下的状态，不方便时可以跳过。请根据数据帮我分析。")
+            val cadence = if (project.reminderFrequency == ReminderFrequency.WEEKLY) "在选定的星期和时间" else "每天在固定时间"
+            appendLine("你是一位擅长个人数据分析的助手。下面是我用「此刻 Nowly」做经验采样记录的数据：App ${cadence}提醒我，我用一个单选回答当下的状态，不方便时可以跳过。请根据数据帮我分析。")
             appendLine()
             appendLine("## 记录说明")
             appendLine("- 记录名称：${project.name}")
             appendLine("- 问题：${project.question}")
             appendLine("- 选项是有序等级，从低到高：" + scale.levels.mapIndexed { index, option -> "${index + 1} = ${option.label}" }.joinToString("，"))
             if (retired.isNotEmpty()) appendLine("- 已停用的旧选项（没有等级，不计入平均）：" + retired.joinToString("、") { it.label })
-            if (project.times.isNotEmpty()) appendLine("- 每日提醒时间：" + project.times.joinToString("、") { minuteLabel(it) })
+            if (project.times.isNotEmpty()) {
+                val label = if (project.reminderFrequency == ReminderFrequency.WEEKLY) "每周提醒：" +
+                    listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日").filterIndexed { index, _ -> project.reminderDays and (1 shl index) != 0 }.joinToString("、") + " "
+                    else "每日提醒时间："
+                appendLine("- " + label + project.times.joinToString("、") { minuteLabel(it) })
+            }
             appendLine("- 日期范围：$start 至 $end（$days 天），时区 $zone")
             appendLine("- 「时间」是实际填写时间，日期与时段都按它归组；「已跳过」是我主动跳过，「未处理」是在下一次提醒到来前没有回应，「待处理」是提醒仍未回应。")
             appendLine()

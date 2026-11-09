@@ -102,7 +102,8 @@ class StartupTest {
         compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("按选项统计"))
         compose.onNodeWithText("按选项统计").assertIsDisplayed()
         compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("记录"))
-        compose.onAllNodesWithText("这个日期范围内还没有回答记录").assertCountEquals(4)
+        // LazyColumn composes a viewport-dependent number of sections; verify the scrolled record section itself.
+        compose.onAllNodesWithText("这个日期范围内还没有回答记录").onLast().assertIsDisplayed()
         compose.onNodeWithContentDescription("返回").performClick()
         openHomeAction("测试专注统计")
         compose.onNodeWithTag("screen-title").assertTextEquals("统计")

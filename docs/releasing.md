@@ -40,4 +40,4 @@ python3 -m http.server 8765 --directory site --bind 127.0.0.1
 
 浏览器打开 <http://127.0.0.1:8765>，检查截图切换、FAQ、窄屏和下载入口。发布 CI 会生成 `site/release.json`，使页面下载链接指向本次发布的确切版本；本地无该文件时回退到最新 Release。
 
-本地正式构建设置四个环境变量：`NOWLY_KEYSTORE_PATH`（绝对路径）、`NOWLY_KEYSTORE_PASSWORD`、`NOWLY_KEY_ALIAS`、`NOWLY_KEY_PASSWORD`，再运行 `./gradlew :app:assembleRelease`。未提供签名时只生成未签名构建，不回退到调试密钥。正式版与已有 Debug 版独立安装，当前没有导入迁移功能。
+本地正式构建设置四个环境变量：`NOWLY_KEYSTORE_PATH`（绝对路径）、`NOWLY_KEYSTORE_PASSWORD`、`NOWLY_KEY_ALIAS`、`NOWLY_KEY_PASSWORD`，再运行 `./gradlew :app:assembleRelease`。未提供签名时只生成未签名构建，不回退到调试密钥。正式版与已有 Debug 版独立安装，支持通过完整项目文件手动迁移；两边均需安装支持项目导入导出的版本。

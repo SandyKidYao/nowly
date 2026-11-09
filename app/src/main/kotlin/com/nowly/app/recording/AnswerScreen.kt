@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nowly.app.data.local.SampleStatus
 import com.nowly.app.projects.HomeUiState
+import com.nowly.app.projects.ProjectKind
 import com.nowly.app.ui.MvpViewModel
 import com.nowly.app.ui.ScreenBar
 import com.nowly.app.ui.queryState
@@ -28,6 +29,10 @@ fun AnswerRoute(initialId: String, vm: MvpViewModel, onClose: () -> Unit) {
     val result by queryState(flow)
     val sample = result?.getOrNull()
     val project = (state as? HomeUiState.Ready)?.projects?.firstOrNull { it.id == sample?.projectId }
+    if (project?.kind == ProjectKind.NUMBER && sample != null) {
+        NumericEntryScreen(project, vm, onClose, pendingId = sample.id, pendingStatus = sample.status)
+        return
+    }
     var saving by remember { mutableStateOf(false) }
     var error by remember(id) { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()

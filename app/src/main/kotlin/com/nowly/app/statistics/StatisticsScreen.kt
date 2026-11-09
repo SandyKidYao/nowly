@@ -48,6 +48,7 @@ import com.nowly.app.data.local.SampleEntity
 import com.nowly.app.data.local.SampleStatus
 import com.nowly.app.projects.AnswerOption
 import com.nowly.app.projects.RecordProject
+import com.nowly.app.projects.ProjectKind
 import com.nowly.app.statistics.StatisticsExport.format
 import com.nowly.app.ui.MvpViewModel
 import com.nowly.app.ui.ScreenBar
@@ -71,7 +72,13 @@ private class ScalePaint(val scale: LevelScale) {
 }
 
 @Composable
-fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBack: () -> Unit) {
+fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBack: () -> Unit,
+    onExportProject: (() -> Unit)? = null, transferEnabled: Boolean = true,
+    onRecordNumber: () -> Unit = {}, onEditNumber: (String) -> Unit = {}) {
+    if (project?.kind == ProjectKind.NUMBER) {
+        NumericStatisticsScreen(project, vm, onBack, onRecordNumber, onEditNumber, onExportProject, transferEnabled)
+        return
+    }
     var start by rememberSaveable(id) { mutableStateOf(LocalDate.now().minusDays(6).toString()) }
     var end by rememberSaveable(id) { mutableStateOf(LocalDate.now().toString()) }
     var filtering by remember { mutableStateOf(false) }
@@ -159,7 +166,7 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
                         val mosaic = remember(records, project?.times) { RecordMosaic.from(records, project?.times.orEmpty(), LocalDate.parse(start), LocalDate.parse(end)) }
                         MosaicSection(mosaic, project?.options.orEmpty(), options, paint, records.isEmpty())
                     }
-                    if (project != null) item { ExportSection(project, records, start, end, previousMean, vm) }
+                    if (project != null) item { ExportSection(project, records, start, end, previousMean, vm, onExportProject, transferEnabled) }
                 }
             }
         }
@@ -344,7 +351,8 @@ private fun StackedBar(counts: Map<String, Int>, options: List<AnswerOption>, pa
 }
 
 @Composable
-private fun ExportSection(project: RecordProject, records: List<SampleEntity>, start: String, end: String, previousMean: Double?, vm: MvpViewModel) {
+internal fun ExportSection(project: RecordProject, records: List<SampleEntity>, start: String, end: String, previousMean: Double?, vm: MvpViewModel,
+    onExportProject: (() -> Unit)?, transferEnabled: Boolean) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var preview by remember { mutableStateOf(false) }
@@ -384,6 +392,14 @@ private fun ExportSection(project: RecordProject, records: List<SampleEntity>, s
             ExportRow("AI 提示词") {
                 ExportButton("预览", enabled, Modifier.testTag("preview-prompt")) { preview = true }
                 ExportButton("复制", enabled, Modifier.testTag("copy-prompt"), filled = true) { copy("Nowly 分析提示词", prompt, "已复制提示词") }
+            }
+            if (onExportProject != null) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                ExportRow("完整项目") {
+                    ExportButton("导出项目", transferEnabled, Modifier.testTag("export-project"), onClick = onExportProject)
+                }
+                Text("包含项目设置和全部历史，可导入另一个 Nowly；不受上方日期筛选影响。",
+                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -547,7 +563,7 @@ private fun Legend(options: List<AnswerOption>, paint: ScalePaint, extra: @Compo
 }
 
 @Composable
-private fun DateRangeDialog(start: String, end: String, onDismiss: () -> Unit, onApply: (String, String) -> Unit) {
+internal fun DateRangeDialog(start: String, end: String, onDismiss: () -> Unit, onApply: (String, String) -> Unit) {
     var first by rememberSaveable { mutableStateOf(start) }
     var last by rememberSaveable { mutableStateOf(end) }
     val context = LocalContext.current

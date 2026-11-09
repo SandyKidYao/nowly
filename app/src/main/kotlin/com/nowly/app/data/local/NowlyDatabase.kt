@@ -5,11 +5,22 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ProjectEntity::class, OptionEntity::class, ReminderTimeEntity::class, SampleEntity::class, MetadataEntity::class], version = 2, exportSchema = true)
+@Database(entities = [ProjectEntity::class, OptionEntity::class, ReminderTimeEntity::class, SampleEntity::class, MetadataEntity::class], version = 3, exportSchema = true)
 abstract class NowlyDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
 
     companion object {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE projects ADD COLUMN kind TEXT NOT NULL DEFAULT 'choice'")
+                db.execSQL("ALTER TABLE projects ADD COLUMN unit TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE projects ADD COLUMN reminderFrequency TEXT NOT NULL DEFAULT 'daily'")
+                db.execSQL("ALTER TABLE projects ADD COLUMN reminderDays INTEGER NOT NULL DEFAULT 127")
+                db.execSQL("ALTER TABLE samples ADD COLUMN numericValue TEXT DEFAULT NULL")
+                db.execSQL("ALTER TABLE samples ADD COLUMN origin TEXT NOT NULL DEFAULT 'reminder'")
+            }
+        }
+
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE projects ADD COLUMN ordered INTEGER NOT NULL DEFAULT 0")
