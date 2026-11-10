@@ -14,8 +14,8 @@ android {
         applicationId = "com.nowly.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = providers.environmentVariable("NOWLY_VERSION_NAME").orElse("0.2.5-mvp").get()
+        versionCode = 8
+        versionName = providers.environmentVariable("NOWLY_VERSION_NAME").orElse("0.2.6-mvp").get()
         testInstrumentationRunner = "com.nowly.app.NowlyTestRunner"
     }
 

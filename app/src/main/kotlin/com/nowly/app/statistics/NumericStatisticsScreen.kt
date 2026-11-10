@@ -33,7 +33,8 @@ import java.time.ZoneId
 
 @Composable
 fun NumericStatisticsScreen(project: RecordProject, vm: MvpViewModel, onBack: () -> Unit,
-    onRecord: () -> Unit, onEdit: (String) -> Unit, onExport: (() -> Unit)?, transferEnabled: Boolean) {
+    onRecord: () -> Unit, onEdit: (String) -> Unit, onExport: (() -> Unit)?, transferEnabled: Boolean,
+    onEditProject: () -> Unit = {}) {
     var start by rememberSaveable(project.id) { mutableStateOf(LocalDate.now().minusDays(29).toString()) }
     var end by rememberSaveable(project.id) { mutableStateOf(LocalDate.now().toString()) }
     var filtering by remember { mutableStateOf(false) }
@@ -43,7 +44,10 @@ fun NumericStatisticsScreen(project: RecordProject, vm: MvpViewModel, onBack: ()
     val summary = remember(records) { NumericSummary.from(records) }
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { insets ->
         Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar("统计", onBack) { TextButton(onClick = onRecord, shape = MaterialTheme.shapes.small) { Text("记录数字") } }
+            ScreenBar("统计", onBack) {
+                TextButton(onClick = onRecord, shape = MaterialTheme.shapes.small, modifier = Modifier.heightIn(min = 48.dp)) { Text("记录数字") }
+                EditProjectAction(onEditProject)
+            }
             LazyColumn(Modifier.fillMaxSize().testTag("statistics-list"), contentPadding = PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {

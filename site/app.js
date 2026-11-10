@@ -1,5 +1,5 @@
 const screens = {
-  home: ['assets/home.png', '记录首页：预置心情记录，可以自定义问题、选项和提醒。'],
+  home: ['assets/home.png', '首页：预置心情项目，可以自定义问题、选项和提醒。'],
   answer: ['assets/answer.png', '回答页：此刻，你的心情怎么样？轻点一个选项即可记录。'],
   statistics: ['assets/statistics.png', '统计演示：平均等级、每日趋势和选项占比，使用合成数据。'],
 };

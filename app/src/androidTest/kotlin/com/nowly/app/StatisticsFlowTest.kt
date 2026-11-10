@@ -55,8 +55,8 @@ class StatisticsFlowTest {
             }
         }
         try {
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasContentDescription("统计样本统计"))
-            compose.onNodeWithContentDescription("统计样本统计").performClick()
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
+            compose.onNodeWithTag("project-card-$id").performClick()
             compose.onNodeWithText("筛选").assertDoesNotExist()
             compose.onNodeWithText("查看统计").assertDoesNotExist()
             // Fixtures span today-8..today; the default 7-day window holds answers 10..34 and drops the oldest 10.

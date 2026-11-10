@@ -30,10 +30,13 @@ Kotlin 路径前缀：`app/src/main/kotlin/com/nowly/app/`。
 | `statistics/` | 平均、趋势、马赛克、CSV 与提示词 |
 | `data/` | Room 实体、DAO、仓库、事务与迁移 |
 | `platform/reminders/` | 统一提醒状态入口、AlarmManager、通知与 Receiver |
+| `updates/` | 版本清单解析、下载与校验、更新状态和弹窗；App 中唯一的联网代码 |
 | `app/schemas/` | 数据库 schema，随变更提交并增加迁移测试 |
 | `site/` | 无构建依赖的 GitHub Pages 产品页 |
 
 一个 app 模块，手动 AppContainer 组装依赖。界面通过 ViewModel/Flow 读取数据，ViewModel 和 Receiver 共用仓库及提醒引擎，避免复制状态规则。系统提醒使用 AlarmManager，不依赖页面或进程持续运行。图表用 Compose/Canvas。
+
+更新逻辑（`AppUpdater`）不依赖 Android 类，网络、设置和安装包检查都通过接口注入，用 JVM 单元测试覆盖；弹窗和首页入口有独立的设备测试。Debug 构建不启用更新，真实的下载安装只能在正式签名的版本上验证。修改清单字段时同步 `scripts/write-release-manifest.py`。
 
 数字功能还需验证 v2→v3 数据保留、精确小数、每周跨日/夏令时、补记不消费待处理提醒、旧提醒和过期编辑竞争，以及 v1/v2 项目文件兼容。
 

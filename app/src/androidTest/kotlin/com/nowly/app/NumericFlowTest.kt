@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.view.View
 import android.widget.DatePicker
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.espresso.Espresso.onView
@@ -49,7 +50,7 @@ class NumericFlowTest {
 
     @Test fun createsWeeklyWeightTracksExactChangesRetainsDraftAndCanEditOrDeleteMeasurements() {
         home()
-        compose.onNodeWithContentDescription("创建记录").performClick()
+        compose.onNodeWithContentDescription("创建项目").performClick()
         compose.onNodeWithTag("type-number").performClick()
         compose.onNodeWithText("使用每周体重示例").performClick()
         compose.onNodeWithTag("editor-list").performScrollToNode(hasTestTag("reminder-switch"))
@@ -100,8 +101,11 @@ class NumericFlowTest {
             assertNull(runBlocking { container.repository.dao.sample(latest.id) })
             assertEquals(1, runBlocking { container.repository.dao.allSamples(project.id).size })
             compose.onNodeWithContentDescription("返回").performClick()
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-settings-${project.id}"))
-            compose.onNodeWithTag("project-settings-${project.id}").performClick()
+            // The card opens statistics even though it also holds the record button; touch it on the name row.
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-${project.id}"))
+            compose.onNodeWithTag("project-card-${project.id}").performTouchInput { click(Offset(centerX, 40f)) }
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("numeric-latest").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("edit-project").performClick()
             compose.onNodeWithTag("type-number").assertIsNotEnabled()
         } finally { runBlocking { container.reminders.delete(project.id) } }
     }

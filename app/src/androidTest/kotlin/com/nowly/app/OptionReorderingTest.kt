@@ -36,8 +36,9 @@ class OptionReorderingTest {
                 List(count) { AnswerOption(UUID.randomUUID().toString(), "等级 ${it + 1}", it) }, listOf(600, 1200)))
             container.repository.projects().first { it.id == id }
         }
-        compose.onNodeWithTag("projects-list").performScrollToNode(hasContentDescription("排序测试设置"))
-        compose.onNodeWithContentDescription("排序测试设置").performClick()
+        compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
+        compose.onNodeWithTag("project-card-$id").performClick()
+        compose.onNodeWithTag("edit-project").performClick()
         compose.onNodeWithTag("editor-list").performScrollToIndex(1)
         return original
     }
@@ -79,7 +80,8 @@ class OptionReorderingTest {
         compose.onNodeWithText("上移").assertDoesNotExist()
         captureEvidence(compose, "option-reordering")
         compose.onNodeWithText("保存").performClick()
-        compose.waitUntil(10_000) { compose.onAllNodesWithTag("projects-list").fetchSemanticsNodes().isNotEmpty() }
+        // Saving returns to the statistics page the editor was opened from.
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("statistics-list").fetchSemanticsNodes().isNotEmpty() }
         val updated = runBlocking { container.repository.projects().first { it.id == id } }
         assertEquals(listOf(second.id, first.id) + original.options.drop(2).map { it.id }, updated.options.map { it.id })
         assertEquals("改名后的等级", updated.options.first { it.id == first.id }.label)

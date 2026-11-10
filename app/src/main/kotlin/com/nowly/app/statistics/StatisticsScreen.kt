@@ -74,9 +74,9 @@ private class ScalePaint(val scale: LevelScale) {
 @Composable
 fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBack: () -> Unit,
     onExportProject: (() -> Unit)? = null, transferEnabled: Boolean = true,
-    onRecordNumber: () -> Unit = {}, onEditNumber: (String) -> Unit = {}) {
+    onRecordNumber: () -> Unit = {}, onEditNumber: (String) -> Unit = {}, onEdit: () -> Unit = {}) {
     if (project?.kind == ProjectKind.NUMBER) {
-        NumericStatisticsScreen(project, vm, onBack, onRecordNumber, onEditNumber, onExportProject, transferEnabled)
+        NumericStatisticsScreen(project, vm, onBack, onRecordNumber, onEditNumber, onExportProject, transferEnabled, onEdit)
         return
     }
     var start by rememberSaveable(id) { mutableStateOf(LocalDate.now().minusDays(6).toString()) }
@@ -97,7 +97,7 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
     val options = scale.levels + project?.options.orEmpty().filter { !it.active && (stats.options[it.id] ?: 0) > 0 }
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { insets ->
         Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar("统计", onBack)
+            ScreenBar("统计", onBack) { if (project != null) EditProjectAction(onEdit) }
             LazyColumn(Modifier.fillMaxSize().testTag("statistics-list"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
@@ -172,6 +172,12 @@ fun StatisticsScreen(id: String, project: RecordProject?, vm: MvpViewModel, onBa
         }
     }
     if (filtering) DateRangeDialog(start, end, { filtering = false }) { first, last -> start = first; end = last; filtering = false }
+}
+
+/** The statistics page is the project's home, so its settings are reached from here. */
+@Composable
+internal fun EditProjectAction(onEdit: () -> Unit) {
+    TextButton(onClick = onEdit, shape = MaterialTheme.shapes.small, modifier = Modifier.heightIn(min = 48.dp).testTag("edit-project")) { Text("编辑") }
 }
 
 @Composable

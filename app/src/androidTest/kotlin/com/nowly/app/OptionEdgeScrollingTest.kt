@@ -44,19 +44,18 @@ class OptionEdgeScrollingTest {
         while (!node.isClickable) node = node.parent ?: error("No click action for $text")
         check(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
     }
-    private fun openSettings(description: String) {
+    /** Home card → statistics → edit, the same path a user takes. */
+    private fun openEditor(name: String) {
         repeat(15) {
-            val target = nodes().firstOrNull { it.contentDescription?.toString() == description && it.isVisibleToUser }
-            if (target != null) {
-                var node: AccessibilityNodeInfo = target
-                while (!node.isClickable) node = node.parent ?: error("No click action for $description")
-                check(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
+            if (nodes().any { it.text?.toString() == name && it.isVisibleToUser }) {
+                click(name)
+                click("编辑")
                 return
             }
             nodes().firstOrNull { it.isScrollable }?.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
             SystemClock.sleep(250)
         }
-        error("Settings entry not visible: $description")
+        error("Project card not visible: $name")
     }
     private fun lastVisibleOption(): Int = nodes().mapNotNull {
         it.contentDescription?.toString()?.takeIf { label -> label.startsWith("调整选项 ") }
@@ -76,7 +75,7 @@ class OptionEdgeScrollingTest {
                         List(20) { AnswerOption(UUID.randomUUID().toString(), "等级 ${it + 1}", it) }, listOf(600, 1200)))
                     container.repository.projects().first { it.id == id }
                 }
-                openSettings("边缘滚动测试设置")
+                openEditor("边缘滚动测试")
                 val handle = awaitNode { it.contentDescription?.toString() == "调整选项 1 顺序" }
                 val initialLast = lastVisibleOption()
                 val viewport = bounds(awaitNode { it.isScrollable })
@@ -105,7 +104,8 @@ class OptionEdgeScrollingTest {
                 } finally { inject(MotionEvent.ACTION_UP, edge) }
                 SystemClock.sleep(500)
                 click("保存")
-                awaitNode { it.contentDescription?.toString() == "边缘滚动测试设置" }
+                // Saving returns to the statistics page the editor was opened from.
+                awaitNode { it.text?.toString() == "编辑" }
                 val updated = runBlocking { container.repository.projects().first { it.id == id } }
                 val finalPosition = updated.options.indexOfFirst { it.id == original.options.first().id } + 1
                 println("Edge scroll saved: initialLast=$initialLast, finalPosition=$finalPosition")

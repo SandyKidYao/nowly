@@ -51,7 +51,7 @@ fun projectTransferControls(vm: MvpViewModel): ProjectTransferActions {
                 Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(candidate.archive.project.name, style = MaterialTheme.typography.titleMedium)
                     Text(if (candidate.archive.project.kind == ProjectKind.NUMBER)
-                        "数字记录${candidate.archive.project.unit.takeIf { it.isNotEmpty() }?.let { " · $it" }.orEmpty()} · ${candidate.archive.samples.size} 条历史记录"
+                        "数字项目${candidate.archive.project.unit.takeIf { it.isNotEmpty() }?.let { " · $it" }.orEmpty()} · ${candidate.archive.samples.size} 条历史记录"
                         else "${candidate.archive.options.count { it.active }} 个启用选项 · ${candidate.archive.samples.size} 条历史记录")
                     val date = Instant.ofEpochMilli(candidate.archive.exportedAt).atZone(ZoneId.systemDefault())
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))

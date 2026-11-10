@@ -46,7 +46,7 @@ fun AnswerRoute(initialId: String, vm: MvpViewModel, onClose: () -> Unit) {
                 } else if (result?.isFailure == true || state == HomeUiState.ReadError) {
                     Text("暂时无法读取这次提醒，请返回后重试。")
                 } else if (sample == null || project == null) {
-                    Text("这条记录已不存在。")
+                    Text("这次提醒或所属项目已不存在。")
                     TextButton(onClick = onClose) { Text("返回") }
                 } else if (sample.status != SampleStatus.PENDING && !saving) {
                     Text("这次提醒已结束。", style = MaterialTheme.typography.headlineSmall)

@@ -43,9 +43,9 @@ fun NumericEntryRoute(projectId: String, editingId: String?, vm: MvpViewModel, o
         NumericEntryScreen(project, vm, onClose, editing = if (editingId == null) null else loaded)
     } else {
         Scaffold { insets -> Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar("数字记录", onClose)
+            ScreenBar("记录数字", onClose)
             if (state == HomeUiState.Loading || (editingId != null && query == null)) CircularProgressIndicator(Modifier.padding(24.dp))
-            else Text("记录暂时无法读取或已更新，请返回后重新打开。", Modifier.padding(24.dp))
+            else Text("项目或记录暂时无法读取，请返回后重新打开。", Modifier.padding(24.dp))
         } }
     }
 }
@@ -77,7 +77,7 @@ fun NumericEntryScreen(project: RecordProject, vm: MvpViewModel, onClose: () -> 
             ScreenBar(if (editing == null) "记录数字" else "修改记录", { if (!saving) onClose() })
             if (pendingId != null && pendingStatus != null && pendingStatus != SampleStatus.PENDING && !saving) {
                 Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("这次提醒已结束，请返回后重新打开记录。")
+                    Text("这次提醒已结束，请返回后重新记录。")
                     TextButton(onClick = onClose, shape = MaterialTheme.shapes.small) { Text("返回") }
                 }
             } else Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {

@@ -88,7 +88,7 @@ class OfflineProjectRepository(private val database: NowlyDatabase) : ProjectRep
         draft.options.forEach { option -> require(dao.option(option.id)?.projectId?.let { it == draft.id } != false) }
         val existing = dao.project(draft.id)
         if (existing != null && dao.sampleCount(draft.id) > 0) {
-            require(existing.kind == draft.kind) { "已有记录，不能更改记录类型" }
+            require(existing.kind == draft.kind) { "已有记录，不能更改项目类型" }
             require(existing.unit == draft.unit.trim()) { "已有记录，不能更改单位" }
         }
         dao.upsert(ProjectEntity(draft.id, draft.name.trim(), draft.question.trim(),

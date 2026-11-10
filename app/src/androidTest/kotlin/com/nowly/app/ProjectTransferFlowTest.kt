@@ -65,8 +65,8 @@ class ProjectTransferFlowTest {
         compose.onNodeWithText("替换项目").performClick()
         compose.waitUntil(10_000) { vm.importPreview.value == null && !vm.transferBusy.value }
         assertEquals("迁移测试项目", runBlocking { container.repository.dao.project(id)!!.name })
-        compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-statistics-$id"))
-        compose.onNodeWithTag("project-statistics-$id").performClick()
+        compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
+        compose.onNodeWithTag("project-card-$id").performClick()
         compose.onNodeWithTag("statistics-list").performScrollToNode(hasTestTag("export-project"))
         compose.onNodeWithTag("export-project").assertIsEnabled()
         captureTransfer("project-export-section")

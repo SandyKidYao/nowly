@@ -8,6 +8,7 @@ import com.nowly.app.projects.ProjectRepository
 import java.time.Clock
 import com.nowly.app.platform.reminders.AndroidReminderGateway
 import com.nowly.app.platform.reminders.ReminderEngine
+import com.nowly.app.updates.AndroidUpdates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,4 +30,5 @@ class AppContainer(context: Context, databaseName: String = "nowly.db") {
     val projectRepository: ProjectRepository get() = repository
     val reminderGateway by lazy { AndroidReminderGateway(context.applicationContext) }
     val reminders by lazy { ReminderEngine(repository, reminderGateway, clock) }
+    val updates by lazy { AndroidUpdates.create(context.applicationContext, scope) }
 }

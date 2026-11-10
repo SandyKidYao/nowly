@@ -27,6 +27,9 @@ jobs:
     outputs:
       tag: ${{ steps.release.outputs.tag }}
       prerelease: ${{ steps.release.outputs.prerelease }}
+      version_code: ${{ steps.assets.outputs.version_code }}
+      sha256: ${{ steps.assets.outputs.sha256 }}
+      size: ${{ steps.assets.outputs.size }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -80,18 +83,37 @@ jobs:
           node --check site/app.js
           ./gradlew :app:testDebugUnitTest :app:lintRelease :app:assembleRelease
       - name: Verify APK signature and publish assets
+        id: assets
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          PRERELEASE: ${{ steps.release.outputs.prerelease }}
+          PUBLISHED_MANIFEST: https://sandykidyao.github.io/nowly/release.json
         shell: bash
         run: |
           set -euo pipefail
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose app/build/outputs/apk/release/app-release.apk
           mkdir -p dist
           cp app/build/outputs/apk/release/app-release.apk dist/nowly.apk
+          VERSION_CODE=$("$ANDROID_HOME/build-tools/36.0.0/aapt2" dump badging dist/nowly.apk | sed -n "s/^package:.* versionCode='\([0-9]*\)'.*/\1/p")
+          [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] || { echo 'Could not read versionCode from the APK'; exit 1; }
+          # Installed copies are only offered a higher versionCode, and Android refuses to install a lower one.
+          # The page currently deployed describes the latest stable release; a rebuild of that same tag is fine.
+          PUBLISHED=$(curl -fsSL --max-time 20 "$PUBLISHED_MANIFEST" || echo '{}')
+          PUBLISHED_TAG=$(jq -r '.tag // ""' <<<"$PUBLISHED" 2>/dev/null || echo '')
+          PUBLISHED_CODE=$(jq -r '.versionCode // 0 | floor' <<<"$PUBLISHED" 2>/dev/null || echo 0)
+          if [[ "$PRERELEASE" == false && "$PUBLISHED_TAG" != "$RELEASE_TAG" && "$VERSION_CODE" -le "$PUBLISHED_CODE" ]]; then
+            echo "versionCode $VERSION_CODE is not above the published $PUBLISHED_CODE ($PUBLISHED_TAG). Increase versionCode in app/build.gradle.kts."
+            exit 1
+          fi
           (cd dist && sha256sum nowly.apk > nowly.apk.sha256)
           gh release upload "$RELEASE_TAG" dist/nowly.apk dist/nowly.apk.sha256 --clobber
+          {
+            echo "version_code=$VERSION_CODE"
+            echo "sha256=$(cut -d ' ' -f 1 dist/nowly.apk.sha256)"
+            echo "size=$(stat -c %s dist/nowly.apk)"
+          } >> "$GITHUB_OUTPUT"
       - name: Remove signing material
         if: always()
         run: rm -f "$RUNNER_TEMP/nowly-release.jks"
@@ -120,14 +142,19 @@ jobs:
           persist-credentials: false
       - name: Prepare product page
         env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ needs.apk.outputs.tag }}
+          VERSION_CODE: ${{ needs.apk.outputs.version_code }}
+          APK_SHA256: ${{ needs.apk.outputs.sha256 }}
+          APK_SIZE: ${{ needs.apk.outputs.size }}
+        shell: bash
         run: |
+          set -euo pipefail
           python3 scripts/check-site.py
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          Path('site/release.json').write_text(json.dumps({'tag': os.environ['RELEASE_TAG']}) + '\n')
-          PY
+          # The page's download link and the app's update check both read this file.
+          gh release view "$RELEASE_TAG" --json body --jq .body > "$RUNNER_TEMP/release-notes.md"
+          python3 scripts/write-release-manifest.py "$RUNNER_TEMP/release-notes.md"
           touch site/.nojekyll
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5

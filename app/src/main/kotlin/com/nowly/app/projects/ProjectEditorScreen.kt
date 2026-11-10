@@ -134,7 +134,7 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
     }
     Scaffold(containerColor = MaterialTheme.colorScheme.background, modifier = Modifier.imePadding()) { insets ->
         Column(Modifier.fillMaxSize().padding(insets)) {
-            ScreenBar(if (create) "创建记录" else "编辑", { if (editingEnabled) onBack() })
+            ScreenBar(if (create) "创建项目" else "编辑项目", { if (editingEnabled) onBack() })
             LazyColumn(
                 modifier = Modifier.weight(1f).testTag("editor-list"), state = scroll,
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -145,11 +145,11 @@ fun ProjectEditorScreen(id: String, create: Boolean, project: RecordProject?, no
                         Text("信息", style = MaterialTheme.typography.titleMedium)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             FilterChip(selected = state.kind == ProjectKind.CHOICE, onClick = { state.selectKind(ProjectKind.CHOICE) },
-                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("选项记录") }, modifier = Modifier.testTag("type-choice"))
+                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("选项项目") }, modifier = Modifier.testTag("type-choice"))
                             FilterChip(selected = state.kind == ProjectKind.NUMBER, onClick = { state.selectKind(ProjectKind.NUMBER) },
-                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("数字记录") }, modifier = Modifier.testTag("type-number"))
+                                enabled = editingEnabled && project?.hasHistory != true, label = { Text("数字项目") }, modifier = Modifier.testTag("type-number"))
                         }
-                        if (project?.hasHistory == true) Text("已有历史，记录方式保持不变。", style = MaterialTheme.typography.bodySmall,
+                        if (project?.hasHistory == true) Text("已有历史，项目类型保持不变。", style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                         if (create && state.kind == ProjectKind.NUMBER) TextButton(onClick = {
                             state.name = "体重"; state.question = "这次测得的体重是多少？"; state.unit = "kg"

@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +30,9 @@ import com.nowly.app.projects.*
 import com.nowly.app.recording.AnswerRoute
 import com.nowly.app.recording.NumericEntryRoute
 import com.nowly.app.statistics.StatisticsScreen
+import com.nowly.app.updates.UpdateDialog
+import com.nowly.app.updates.UpdateState
+import com.nowly.app.updates.release
 import java.util.UUID
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -54,8 +58,14 @@ fun NowlyApp(container: AppContainer) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var permissionsVersion by remember { mutableIntStateOf(0) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionsVersion++; vm.refresh() }
+    val updater = container.updates
+    val update by updater.state.collectAsStateWithLifecycle()
+    val skippedUpdate by updater.skipped.collectAsStateWithLifecycle()
+    var showUpdates by rememberSaveable { mutableStateOf(false) }
     DisposableEffect(lifecycle) {
-        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) { permissionsVersion++; vm.refresh() } }
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) { permissionsVersion++; vm.refresh(); updater.checkIfDue() }
+        }
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
@@ -72,10 +82,15 @@ fun NowlyApp(container: AppContainer) {
         NavDisplay(backStack = backStack, onBack = { back() }, entryProvider = entryProvider {
             entry<Home> {
                 HomeScreen(state, onCreate = { backStack.add(Editor(UUID.randomUUID().toString(), true)) },
-                    onEdit = { backStack.add(Editor(it, false)) }, onStatistics = { backStack.add(Statistics(it)) },
+                    onStatistics = { backStack.add(Statistics(it)) },
                     onAnswer = { backStack.add(Answer(it)) },
                     onImport = transfer.importProject, transferEnabled = transfer.enabled,
-                    onNumeric = { backStack.add(NumericEntry(it)) })
+                    onNumeric = { backStack.add(NumericEntry(it)) },
+                    updateNotice = update.release?.takeIf { it.versionCode != skippedUpdate }?.let {
+                        if (update is UpdateState.Ready) "新版本 ${it.versionName} 已下载，可以安装" else "新版本 ${it.versionName} 可用"
+                    },
+                    versionLabel = "此刻 ${updater.versionName}",
+                    onUpdates = if (updater.enabled) { { showUpdates = true } } else null)
             }
             entry<Editor> { route ->
                 ProjectEditorScreen(route.id, route.create, projects.firstOrNull { it.id == route.id },
@@ -99,10 +114,12 @@ fun NowlyApp(container: AppContainer) {
             entry<Statistics> { route -> StatisticsScreen(route.id, projects.firstOrNull { it.id == route.id }, vm, ::back,
                 onExportProject = { transfer.exportProject(route.id) }, transferEnabled = transfer.enabled,
                 onRecordNumber = { backStack.add(NumericEntry(route.id)) },
-                onEditNumber = { backStack.add(NumericEntry(route.id, it)) }) }
+                onEditNumber = { backStack.add(NumericEntry(route.id, it)) },
+                onEdit = { backStack.add(Editor(route.id, false)) }) }
             entry<Answer> { route -> AnswerRoute(route.id, vm, ::back) }
             entry<NumericEntry> { route -> NumericEntryRoute(route.projectId, route.editingId, vm, ::back) }
         })
+        if (showUpdates) UpdateDialog(updater) { showUpdates = false; updater.acknowledge() }
         if (transferBusy) LinearProgressIndicator(Modifier.align(Alignment.TopCenter).fillMaxWidth().statusBarsPadding()
             .semantics { contentDescription = "正在处理项目文件" })
         SnackbarHost(snackbars, Modifier.align(Alignment.BottomCenter).navigationBarsPadding())

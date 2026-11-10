@@ -52,8 +52,8 @@ object StatisticsExport {
             val cadence = if (project.reminderFrequency == ReminderFrequency.WEEKLY) "在选定的星期和时间" else "每天在固定时间"
             appendLine("你是一位擅长个人数据分析的助手。下面是我用「此刻 Nowly」做经验采样记录的数据：App ${cadence}提醒我，我用一个单选回答当下的状态，不方便时可以跳过。请根据数据帮我分析。")
             appendLine()
-            appendLine("## 记录说明")
-            appendLine("- 记录名称：${project.name}")
+            appendLine("## 项目说明")
+            appendLine("- 项目名称：${project.name}")
             appendLine("- 问题：${project.question}")
             appendLine("- 选项是有序等级，从低到高：" + scale.levels.mapIndexed { index, option -> "${index + 1} = ${option.label}" }.joinToString("，"))
             if (retired.isNotEmpty()) appendLine("- 已停用的旧选项（没有等级，不计入平均）：" + retired.joinToString("、") { it.label })

@@ -24,10 +24,16 @@ class StartupTest {
         compose.waitUntil(10_000) { compose.onAllNodesWithText("心情").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("心情").assertIsDisplayed()
         compose.onNodeWithContentDescription("心情提醒").assertDoesNotExist()
-        compose.onNodeWithContentDescription("心情设置").assertExists()
-        compose.onNodeWithContentDescription("心情统计").assertExists()
-        compose.onNodeWithText("设置").assertDoesNotExist()
+        // The whole card is the statistics entry; editing is not offered on the home screen.
+        compose.onNode(hasText("心情") and hasClickAction()).assertExists()
+        compose.onNodeWithContentDescription("心情设置").assertDoesNotExist()
+        compose.onNodeWithText("编辑").assertDoesNotExist()
         compose.onNodeWithText("统计").assertDoesNotExist()
+        // Debug builds cannot be replaced by a published APK, so they show the version without an update entry.
+        compose.onNodeWithTag("projects-list").performScrollToNode(hasText("此刻 ", substring = true))
+        compose.onNodeWithTag("version-updates").assertDoesNotExist()
+        compose.onNodeWithTag("update-notice").assertDoesNotExist()
+        compose.onNodeWithTag("projects-list").performScrollToIndex(0)
         compose.onNodeWithText("已暂停", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithText("每天 5 次 · 手动时间点").assertDoesNotExist()
         screenshot("home")
@@ -43,44 +49,47 @@ class StartupTest {
                     com.nowly.app.projects.AnswerOption(java.util.UUID.randomUUID().toString(), "差", 1)), listOf(600)))
         }
         try {
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-settings-$id"))
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
             compose.onNodeWithTag("project-paused-$id", useUnmergedTree = true).assertDoesNotExist()
-            openHomeAction("暂停测试设置")
+            openEditor("暂停测试")
             compose.onNodeWithTag("editor-list").performScrollToNode(hasTestTag("reminder-switch"))
             compose.onNodeWithTag("reminder-switch").assertIsOn().performClick()
             compose.onNodeWithTag("reminder-switch").assertIsOff()
-            // Leaving without saving must not pause the project.
+            // Leaving without saving returns to statistics and must not pause the project.
             compose.onNodeWithContentDescription("返回").performClick()
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-settings-$id"))
+            backHome()
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
             compose.onNodeWithTag("project-paused-$id", useUnmergedTree = true).assertDoesNotExist()
             org.junit.Assert.assertTrue(runBlocking { container.repository.projects().first { it.id == id }.remindersEnabled })
-            openHomeAction("暂停测试设置")
+            openEditor("暂停测试")
             compose.onNodeWithTag("editor-list").performScrollToNode(hasTestTag("reminder-switch"))
             compose.onNodeWithTag("reminder-switch").assertIsOn().performClick()
             compose.onNodeWithText("保存").performClick()
-            compose.waitUntil(10_000) { compose.onAllNodesWithTag("projects-list").fetchSemanticsNodes().isNotEmpty() }
+            // Saving an edit returns to the statistics page it was opened from.
+            backHome()
             compose.waitUntil(10_000) { runBlocking { !container.repository.projects().first { it.id == id }.remindersEnabled } }
             // The badge sits inside the card's merged click target, so read it from the unmerged tree.
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-settings-$id"))
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("project-paused-$id", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithTag("project-paused-$id", useUnmergedTree = true).assertIsDisplayed()
             compose.onNodeWithText("已暂停", useUnmergedTree = true).assertIsDisplayed()
-            compose.onNodeWithContentDescription("暂停测试设置，已暂停").assertExists()
+            // Screen readers hear the pause state as part of the card.
+            compose.onNode(hasTestTag("project-card-$id") and hasText("已暂停")).assertExists()
             screenshot("home-paused")
-            openHomeAction("暂停测试设置，已暂停")
+            openEditor("暂停测试")
             compose.onNodeWithTag("editor-list").performScrollToNode(hasTestTag("reminder-switch"))
             compose.onNodeWithTag("reminder-switch").assertIsOff().performClick()
             compose.onNodeWithText("保存").performClick()
-            compose.waitUntil(10_000) { compose.onAllNodesWithTag("projects-list").fetchSemanticsNodes().isNotEmpty() }
+            backHome()
             compose.waitUntil(10_000) { runBlocking { container.repository.projects().first { it.id == id }.remindersEnabled } }
-            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-settings-$id"))
+            compose.onNodeWithTag("projects-list").performScrollToNode(hasTestTag("project-card-$id"))
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("project-paused-$id", useUnmergedTree = true).fetchSemanticsNodes().isEmpty() }
         } finally { runBlocking { container.reminders.delete(id) } }
     }
 
     @Test fun createsEditsViewsStatisticsAndDeletesAProject() {
         compose.waitUntil(10_000) { compose.onAllNodesWithText("心情").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithContentDescription("创建记录").performClick()
+        compose.onNodeWithContentDescription("创建项目").performClick()
         compose.onNodeWithText("普通分类").assertDoesNotExist()
         compose.onNodeWithText("有序等级").assertDoesNotExist()
         compose.onNode(hasSetTextAction() and hasText("名称")).performTextReplacement("测试专注")
@@ -90,7 +99,7 @@ class StartupTest {
         compose.onNodeWithTag("editor-list").performScrollToNode(hasSetTextAction() and hasText("选项 2"))
         compose.onNode(hasSetTextAction() and hasText("选项 2")).performTextReplacement("分心")
         compose.onNodeWithText("保存").performClick()
-        // Creating a record lands on its merged statistics-and-records page.
+        // Creating a project lands on its merged statistics-and-records page.
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("statistics-list").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("screen-title").assertTextEquals("统计")
         compose.onNodeWithText("测试专注").assertIsDisplayed()
@@ -104,11 +113,10 @@ class StartupTest {
         compose.onNodeWithTag("statistics-list").performScrollToNode(hasText("记录"))
         // LazyColumn composes a viewport-dependent number of sections; verify the scrolled record section itself.
         compose.onAllNodesWithText("这个日期范围内还没有回答记录").onLast().assertIsDisplayed()
-        compose.onNodeWithContentDescription("返回").performClick()
-        openHomeAction("测试专注统计")
-        compose.onNodeWithTag("screen-title").assertTextEquals("统计")
-        compose.onNodeWithContentDescription("返回").performClick()
-        openHomeAction("测试专注设置")
+        backHome()
+        // Tapping the card opens statistics, and editing is reached from there.
+        openEditor("测试专注")
+        compose.onNodeWithTag("screen-title").assertTextEquals("编辑项目")
         compose.onNode(hasSetTextAction() and hasText("名称")).performTextReplacement("专注观察")
         compose.activityRule.scenario.recreate()
         screenshot("editor")
@@ -117,9 +125,10 @@ class StartupTest {
         compose.onNodeWithText("删除").performScrollTo().performClick()
         compose.onNodeWithText("取消").performClick()
         compose.onNodeWithText("保存").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("statistics-list").fetchSemanticsNodes().isNotEmpty() }
         compose.waitUntil(10_000) { compose.onAllNodesWithText("专注观察").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("专注观察").assertIsDisplayed()
-        openHomeAction("专注观察设置")
+        compose.onNodeWithTag("edit-project").performClick()
         compose.onNodeWithTag("editor-list").performScrollToNode(hasText("删除"))
         compose.onNodeWithText("删除").performScrollTo().performClick()
         compose.onNodeWithText("确认删除").performClick()
@@ -148,9 +157,19 @@ class StartupTest {
         compose.onNodeWithText("NOWLY").assertIsDisplayed()
     }
 
-    private fun openHomeAction(description: String) {
-        compose.onNodeWithTag("projects-list").performScrollToNode(hasContentDescription(description))
-        compose.onNodeWithContentDescription(description).performClick()
+    private fun openEditor(name: String) {
+        compose.onNodeWithTag("projects-list").performScrollToNode(hasText(name))
+        compose.onNode(hasText(name) and hasClickAction()).performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("statistics-list").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("screen-title").assertTextEquals("统计")
+        compose.onNodeWithTag("edit-project").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("editor-list").fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    private fun backHome() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("statistics-list").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription("返回").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("projects-list").fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun screenshot(name: String) = captureEvidence(compose, name)
